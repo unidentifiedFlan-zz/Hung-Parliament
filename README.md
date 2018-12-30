@@ -1,6 +1,6 @@
 # Hung-Parliament
 
-##------OVERVIEW------
+## ------OVERVIEW------
 
 Hung Parliament is a command line video game where the player, as Prime Minister, must get their legislation passed. The politicians who
 form Parliament share ideas across a network and their affinity for particular ideas are determined by differences between their own
@@ -14,7 +14,7 @@ The player starts off with 100 credibility points. They lose points for each leg
 the credibility points reach zero, the player loses.
 The objective of the game is to survive for as long as possible before running out of credibility points.
 
-##------Screenshots------
+## ------Screenshots------
 
 The first screenshot shows some of the options available to the player. 
   - White text represents the main menu
@@ -24,11 +24,11 @@ The first screenshot shows some of the options available to the player.
 The player can request statistics from the Whip to inform them of who the best politicians to target are. They can add new ideas to their
 arsenal by speaking to politicians. These can they be suggested to others, as seen in the second screenshot.
 
-![Gameplay screenshot](https://github.com/unidentifiedFlan/Hung-Parliament/blob/master/Documentation/Screenshots/Screenshot.png)
+![Gameplay screenshot: an idea is obtained from John Smith](https://github.com/unidentifiedFlan/Hung-Parliament/blob/master/Documentation/Screenshots/Screenshot.png)
 
-![Gameplay screenshot](https://github.com/unidentifiedFlan/Hung-Parliament/blob/master/Documentation/Screenshots/Screenshot1.png)
+![Gameplay screenshot: the idea is suggested to Polly Sanders](https://github.com/unidentifiedFlan/Hung-Parliament/blob/master/Documentation/Screenshots/Screenshot1.png)
 
-##------Still in progress-----
+## ------Still in progress-----
 
 The list includes:
 [ ] The credibility gauge
