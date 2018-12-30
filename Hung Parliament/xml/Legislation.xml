@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ideas>
+  <idea>
+    <name>"Cut all the budgets"</name>
+    <text>"Nothing will be spared!" </text>
+    <influence>2</influence>
+    <characteristics>
+      <egalitarian>-5</egalitarian>
+      <econLib>5</econLib>
+      <authoritarian>-5</authoritarian>
+    </characteristics>
+    <opinion>
+      <characteristics>
+        <egalitarian>-5</egalitarian>
+        <econLib>5</econLib>
+        <authoritarian>-5</authoritarian>
+      </characteristics>
+      <text>"Let's show them commies!"</text>
+    </opinion>
+    <opinion>
+      <characteristics>
+        <egalitarian>-2</egalitarian>
+        <econLib>3</econLib>
+        <authoritarian>4</authoritarian>
+      </characteristics>
+      <text>"I'm all for economic illiteracy but will the public buy it?"</text>
+    </opinion>
+    <opinion>
+      <characteristics>
+        <egalitarian>5</egalitarian>
+        <econLib>3</econLib>
+        <authoritarian>5</authoritarian>
+      </characteristics>
+      <text>"The socialist project will never die!"</text>
+    </opinion>
+  </idea>
+</ideas>

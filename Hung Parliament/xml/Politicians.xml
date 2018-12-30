@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<politicians>
+  <person>
+    <firstName>John</firstName>
+    <lastName>Smith</lastName>
+    <description>"A tall man dressed in black with a crooked jaw. John has never been seen without a cigar and it is claimed he and the cigar are organically attached. Some say the cigar comes up with John's best ideas."</description>
+    <hello>"Ah, it's you."</hello>
+    <goodbye>"Yes, yes, I have things to do."</goodbye>
+  </person>
+  <person>
+    <firstName>Polly</firstName>
+    <lastName>Sanders</lastName>
+    <description>"A broad woman with one drooped eyebrow. Origin unknown."</description>
+    <hello>"[She stares intently]"</hello>
+    <goodbye>"[She stares intently]"</goodbye>
+  </person>
+  <person>
+    <firstName>Albert</firstName>
+    <lastName>Falborough</lastName>
+    <description>"A snooty man with a slim moustache, red-pocked balding head, thin pursed lips and devilish eyes. A small gerbil pokes its head from his breast pocket."</description>
+    <hello>"Is this urgent?"</hello>
+    <goodbye>"I have nothing more to say."</goodbye>
+  </person>
+  <person>
+    <firstName>Hugh</firstName>
+    <lastName>Chipping</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Frank</firstName>
+    <lastName>Dove</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Margaret</firstName>
+    <lastName>Peterson</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Anne</firstName>
+    <lastName>Butcombe</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Peter</firstName>
+    <lastName>Harding</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Cathy</firstName>
+    <lastName>Winchester</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Phil</firstName>
+    <lastName>Stephens</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Rupert</firstName>
+    <lastName>Harrington</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Christopher</firstName>
+    <lastName>Tucker</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Janet</firstName>
+    <lastName>Warner</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Claire</firstName>
+    <lastName>Filton</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Michel</firstName>
+    <lastName>Derry</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Harry</firstName>
+    <lastName>Longoak</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Sir Roger</firstName>
+    <lastName>Farthing</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Bea</firstName>
+    <lastName>Lester</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Tristan</firstName>
+    <lastName>Dern</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+  <person>
+    <firstName>Dame Penelope</firstName>
+    <lastName>Crack</lastName>
+    <description>""</description>
+    <hello>"Hello, how can I help?"</hello>
+    <goodbye>"Until next time."</goodbye>
+  </person>
+</politicians>

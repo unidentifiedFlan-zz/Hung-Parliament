@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ideas>
+  <idea>
+    <name>"Kill the poor"</name>
+    <text>"Killing the poor will reduce poverty, unemployment and immigration and make Britain the richest country per capita in the world!" </text>
+    <influence>2</influence>
+    <characteristics>
+      <egalitarian>-5</egalitarian>
+      <econLib>-3</econLib>
+      <authoritarian>5</authoritarian>
+    </characteristics>
+    <opinion>
+      <characteristics>
+        <egalitarian>-5</egalitarian>
+        <econLib>-3</econLib>
+        <authoritarian>5</authoritarian>
+      </characteristics>
+      <text>"About time!"</text>
+    </opinion>
+    <opinion>
+      <characteristics>
+        <egalitarian>-4</egalitarian>
+        <econLib>-2</econLib>
+        <authoritarian>4</authoritarian>
+      </characteristics>
+      <text>"You can't be serious!"</text>
+    </opinion>
+  </idea>
+  <idea>
+    <name>"Introduce mandatory church attendance"</name>
+    <text>"Everything was better when God made our decisions for us, and young people these days show no respect."</text>
+    <influence>1</influence>
+    <characteristics>
+      <egalitarian>-4</egalitarian>
+      <econLib>-2</econLib>
+      <authoritarian>5</authoritarian>
+    </characteristics>
+    <opinion>
+      <characteristics>
+         <egalitarian>-5</egalitarian>
+         <authoritarian>4</authoritarian>
+      </characteristics>
+      <text>"I love a good hymn!"</text>
+    </opinion>
+    <opinion>
+       <characteristics>
+         <egalitarian>5</egalitarian>
+         <authoritarian>-5</authoritarian>
+        </characteristics>
+        <text>"God couldn't decide his way out of a jam jar!"</text>
+    </opinion>
+    <opinion>
+      <characteristics>
+        <egalitarian>4</egalitarian>
+        <authoritarian>3</authoritarian>
+      </characteristics>
+      <text>"What year is it?"</text>
+    </opinion>
+  </idea>
+  <idea>
+    <name>"Bring back the dead"</name>
+    <text>"Well if slavery's no longer legal, it's time we looked for some alternative free labour."</text>
+    <influence>4</influence>
+    <characteristics>
+      <egalitarian>2</egalitarian>
+      <econLib>-2</econLib>
+      <authoritarian>5</authoritarian>
+    </characteristics>
+      <opinion>
+        <characteristics>
+          <egalitarian>5</egalitarian>
+          <econLib>-2</econLib>
+          <authoritarian>4</authoritarian>
+        </characteristics>
+        <text>"Free the dead! Free the dead!"</text>
+      </opinion>
+      <opinion>
+        <characteristics>
+          <egalitarian>3</egalitarian>
+          <econLib>-2</econLib>
+          <authoritarian>0</authoritarian>
+        </characteristics>
+        <text>"Nuh-uh! Dead is better!"</text>
+      </opinion>
+  </idea>
+  <idea>
+    <name>"Buy a royal pedalo"</name>
+    <text>"Time's may be tight but that doesn't mean we can't waste hard-earned taxpayer money!"</text>
+    <influence>2</influence>
+    <characteristics>
+      <egalitarian>-3</egalitarian>
+      <econLib>-3</econLib>
+      <authoritarian>2</authoritarian>
+    </characteristics>
+      <opinion>
+        <characteristics>
+          <egalitarian>-5</egalitarian>
+          <econLib>-2</econLib>
+          <authoritarian>4</authoritarian>
+        </characteristics>
+        <text>"God I love the monarchy..."</text>
+      </opinion>
+      <opinion>
+        <characteristics>
+          <egalitarian>-4</egalitarian>
+          <econLib>-2</econLib>
+          <authoritarian>3</authoritarian>
+        </characteristics>
+        <text>"But she hasn't played with the royal pogo yet..."</text>
+      </opinion>
+  </idea>
+</ideas>
