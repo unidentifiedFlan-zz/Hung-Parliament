@@ -26,7 +26,7 @@ arsenal by speaking to politicians. These can they be suggested to others, as se
 
 ![Gameplay screenshot: an idea is obtained from John Smith](https://github.com/unidentifiedFlan/Hung-Parliament/blob/master/Documentation/Screenshots/Screenshot.png)
 
-![Gameplay screenshot: the idea is suggested to Polly Sanders](https://github.com/unidentifiedFlan/Hung-Parliament/blob/master/Documentation/Screenshots/Screenshot1.png)
+![Gameplay screenshot: the idea is suggested to Polly Sanders](https://github.com/unidentifiedFlan/Hung-Parliament/blob/master/Documentation/Screenshots/Screenshot2.png)
 
 ## ------Still in progress-----
 
