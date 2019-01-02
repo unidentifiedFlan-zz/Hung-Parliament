@@ -9,6 +9,7 @@ class userCommands
 	Whip * _whip;
 	HistoryLogger<std::string, const Idea*> seenIdeas_;
 
+	std::string introduction();
 	void applyCommand(std::string &cmd, bool *quit);
 	void getInformation(std::string &cmd);
 	bool findMP(std::string &cmd);
@@ -22,7 +23,11 @@ class userCommands
 	void getStatistics();
 	void getIdeaDetails();
 	void getMPDetails();
-	void getHelp();
+	std::string getHelp();
+	std::string streamWhip(std::string output);
+	std::string streamOutput(std::string output);
+	std::string streamCommand();
+	void streamCharacteristics(Characteristics characs);
 public:
 	userCommands(Whip* whip);
 	void waitForCommand(bool *quit);

@@ -66,7 +66,7 @@ std::string Whip::getAdvice() {
 	//Fairly straightforward such as "These MPs are against and are the most connected. Ted Howard is a connection
 	//and he's looking fairly persuadable"
 
-	std::string advice = "Whip: You should primarily target the most charismatic and well-connected MPs.";
+	std::string advice = "You should primarily target the most charismatic and well-connected MPs.";
 
 	advice += " The most influential are:\n";
 	advice += lists_.printMostInfluential(10);
@@ -80,7 +80,7 @@ std::string Whip::getAdvice() {
 std::string Whip::getStatistics() {
 	int req = 0.5*parliament_->getNumberOfMPs();
 
-	std::string stats = "Whip: There are " + std::to_string(parliament_->getNumberOfMPs()) + " MPs in parliament.";
+	std::string stats = "There are " + std::to_string(parliament_->getNumberOfMPs()) + " MPs in parliament.";
 	stats += " Currently " + std::to_string(numMPsSupportingLegislation_) +
 			(numMPsSupportingLegislation_ == 1 ? " MP supports" : " MPs support") + " the legislation. We need " + 
 		     std::to_string(req) + " MPs to pass the vote.";
@@ -94,7 +94,7 @@ std::string Whip::getTimeRemaining() {
 std::string Whip::describeLegislation() {
 
 	Idea legislation = parliament_->getLegislation();
-	return "Whip: The legislation currently being proposed is " + legislation.getName() +
+	return "The legislation currently being proposed is " + legislation.getName() +
 		   ". It's purpose is as follows: " + legislation.getDescription();
 }
 

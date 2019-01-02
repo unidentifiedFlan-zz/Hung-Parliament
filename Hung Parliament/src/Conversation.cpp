@@ -3,32 +3,41 @@
 #include <sstream>
 
 Conversation::Conversation(Politician *mp, HistoryLogger<std::string, const Idea*> *seenIdeas, const Idea legislation) : 
-	            mp_(mp), seenIdeas_(seenIdeas)
+	            mp_(mp), seenIdeas_(seenIdeas), legislation_(legislation)
 {
-	std::cout << "You approach " << mp->getFirstName() << " " << mp->getLastName() << " -- " << mp->getDescription() << std::endl;
+	streamOutput(introduction());
 
 	//Using windows.h
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 1);
-	std::cout << mp->sayHello() << std::endl;
+	streamMP(mp->sayHello());
 
-	std::string cmd;
+	processCommands();
+}
+
+
+std::string Conversation::introduction() {
+	std::string intro = "You approach " + mp_->getFirstName() + " " + mp_->getLastName() + " -- " + mp_->getDescription();
+
+	return intro;
+}
+
+
+void Conversation::processCommands() {
 
 	while (true) {
-		std::cout << "Command: ";
 		std::string cmd;
 		std::getline(std::cin, cmd);
 
-		if (cmd == "Ask for support" || cmd == "support") {
-			std::string output = mp->getFirstName() + " " + mp->getLastName() + ": " + mp->getOpinion(&legislation);
-			std::cout << output << std::endl;
+		if (cmd == "Ask for support" || cmd == "support" || cmd == "Support") {
+			streamMP(mp_->getOpinion(&legislation_));
 		}
-		else if (cmd == "Suggest idea" || cmd == "suggest") {
+		else if (cmd == "Suggest idea" || cmd == "suggest" || cmd == "Suggest") {
 			suggestIdea();
 		}
-		else if (cmd == "Current ideas" || cmd == "ideas") {
+		else if (cmd == "Current ideas" || cmd == "ideas" || cmd == "Ideas") {
 			getCurrentIdeas();
 		}
-		else if (cmd == "Leave" || cmd == "quit" || cmd =="q") {
+		else if (cmd == "Leave" || cmd == "quit" || cmd == "q") {
 			endConversation();
 			return;
 		}
@@ -52,50 +61,75 @@ void Conversation::suggestIdea() {
 		output += "\t" + std::to_string(i) + ") " + (it->second)->getName() + "\n";
 		ideaList.push_back(it->second);
 	}
-	output += '\t' + std::to_string(seenIdeas_->size()) + ") Never mind\nCommand: ";
+	output += '\t' + std::to_string(seenIdeas_->size()) + ") Never mind";
 
 	while (true) {
-		std::cout << output;
+		streamOutput(output);
 		std::string ans;
 		std::getline(std::cin, ans);
 		std::stringstream stream(ans);
 		int num;
 		if (stream >> num) {
 			if (num == seenIdeas_->size()) {
+				streamCommand();
 				return;
 			}
 			else if (num >= 0 && num < seenIdeas_->size()) {
 				const Idea* suggIdea = ideaList[num];
-				std::cout << mp_->getOpinion(suggIdea) << std::endl;
+				streamMP(mp_->getOpinion(suggIdea));
 				return;
 			}
 		}
-		std::cout << "Command not recognised." << std::endl;
+		streamOutput("Command not recognised.");
 	}
 }
 
+
 void Conversation::getCurrentIdeas() {
 	const std::vector<const Idea*> ideaList = mp_->getListOfIdeas();
-	std::string currIdeasOutput = mp_->getFirstName() + " " + mp_->getLastName() + ": The ideas I currently like are\n";
+	std::string currIdeasOutput = "The ideas I currently like are:";
 
 	for (std::vector<const Idea*>::const_iterator it = ideaList.begin(); it != ideaList.end(); ++it) {
-		currIdeasOutput += '\t' + (*it)->getName() + '\n';
+		currIdeasOutput += "\n\t" + (*it)->getName();
 		seenIdeas_->add((*it)->getName(),*it);
 	}
 
-	std::cout << currIdeasOutput;
+	streamOutput(currIdeasOutput);
 }
 
 void Conversation::endConversation() {
 	std::string output = mp_->getFirstName() + " " + mp_->getLastName() + ": " + mp_->sayGoodbye();
-	std::cout << output << std::endl;
+	streamOutput(output);
 	//Using windows.h
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	streamCommand();
 }
 
 void Conversation::getHelp() {
 	std::string help = "Command options are:\n\tAsk for support\n\tSuggest idea\n\tCurrent ideas\n\tLeave";
-	std::cout << help << std::endl;
+	streamOutput(help);
+}
+
+std::string Conversation::streamMP(std::string output) {
+
+	output = mp_->getFirstName() + " " + mp_->getLastName() + ": " + output;
+	streamOutput(output);
+
+	return output;
+}
+
+std::string Conversation::streamOutput(std::string output) {
+
+	std::cout << "\r" + output << std::endl;
+	streamCommand();
+	return output;
+}
+
+std::string Conversation::streamCommand() {
+	std::string output = "\rCommand: ";
+	std::cout << output;
+
+	return output;
 }
 
 Conversation::~Conversation()

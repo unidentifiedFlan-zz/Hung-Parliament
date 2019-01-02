@@ -8,13 +8,19 @@ userCommands::userCommands(Whip* whip) : _whip(whip){
 
 void userCommands::waitForCommand(bool *quit){
 
+	streamOutput(introduction());
+
 	std::string cmd;
 
 	while (!(*quit)) {
-		std::cout << "Command: ";
 		std::getline(std::cin, cmd);
 		applyCommand(cmd, quit);
 	}
+}
+
+std::string userCommands::introduction() {
+	std::string output = "";
+	return output;
 }
 
 
@@ -34,24 +40,24 @@ void userCommands::applyCommand(std::string &cmd, bool *quit) {
 void userCommands::getInformation(std::string &cmd) {
 
 	if (requestAdvice(cmd)) {
-		std::cout << _whip->getAdvice() << std::endl;
+		streamWhip(_whip->getAdvice());
 		
 	}
 	else if (cmd == "Legislation info") {
-		std::cout << _whip->describeLegislation() << std::endl;
+		streamWhip(_whip->describeLegislation());
 		
 	}
 	else if (cmd == "Trending ideas") {
-		std::cout << "To do..." << std::endl;
+		streamWhip("To do...");
 	}
 	else if (requestStatistics(cmd)) {
 		getStatistics();
 	}
 	else if (requestHelp(cmd)) {
-		getHelp();
+		streamOutput(getHelp());
 	}
 	else {
-		std::cout << "Command not recognised." << std::endl;
+		streamOutput("Command not recognised.");
 	}
 }
 
@@ -88,7 +94,7 @@ bool userCommands::requestHelp(std::string &cmd) {
 
 void userCommands::startConversation() {
 
-	std::cout << "Whip: Who would you like to have a friendly chat with?\nCommand: ";
+	streamWhip("Who would you like to have a friendly chat with?");
 	std::string mpName;
 
 	std::getline(std::cin, mpName);
@@ -98,15 +104,14 @@ void userCommands::startConversation() {
 		speakToMP(mp);
 	}
 	else {
-		std::cout << "Whip: There doesn't appear to be an MP with that name." << std::endl;
+		streamWhip("There doesn't appear to be an MP with that name.");
 	}
 }
 
 void userCommands::confirmQuit(bool *quit) {
-	std::cout << "Are you sure you want to quit? (y/n)" << std::endl;
+	streamOutput("Are you sure you want to quit? (y/n)");
 
 	while (true) {
-		std::cout << "Command: ";
 		std::string ans;
 		std::getline(std::cin, ans);
 		if (ans == "y") {
@@ -117,7 +122,7 @@ void userCommands::confirmQuit(bool *quit) {
 			break;
 		}
 		else {
-			std::cout << "Command not recognised. Please enter y or n." << std::endl;
+			streamOutput("Command not recognised. Please enter y or n.");
 		}
 	}
 }
@@ -129,35 +134,34 @@ void userCommands::speakToMP(Politician* mp ) {
 		mp->setAvailable();
 	}
 	else {
-		std::cout << "Whip: That MP appears to be busy. Try again later." << std::endl;
+		streamWhip("That MP appears to be busy. Try again later.");
 	}
 }
 
 void userCommands::getStatistics() {
 
 	while (true) {
-		std::cout << "Whip: what kind of statistics would you like?\nCommand: ";
+		streamWhip("What kind of statistics would you like?");
 		std::string cmd;
 		std::getline(std::cin, cmd);
 
 		if (cmd == "General overview" || cmd == "general" || cmd == "overview") {
-			std::cout << _whip->getStatistics() << std::endl;
-			return;
+			streamWhip(_whip->getStatistics());
 		}
 		else if (cmd == "idea" || cmd == "Idea statistics") {
 			getIdeaDetails();
-			return;
 		}
 		else if (cmd == "mp" || cmd == "MP statistics") {
 			getMPDetails();
-			return;
 		}
 		else if (requestHelp(cmd)) {
-			std::string output = "The options are:\n\tGeneral overview\n\tIdea statistics\n\tMP statistics";
-			std::cout << output << std::endl;
+			streamWhip("The options are:\n\tGeneral overview\n\tIdea statistics\n\tMP statistics");
+		}
+		else if (requestQuit(cmd)) {
+			return;
 		}
 		else {
-			std::cout << "Command not recognised." << std::endl;
+			streamOutput("Command not recognised.");
 		}
 	}
 
@@ -166,35 +170,33 @@ void userCommands::getStatistics() {
 void userCommands::getIdeaDetails() {
 
 	while (true) {
-		std::cout << "Whip: Which idea would you like information about?\nCommand: ";
+		streamWhip("Which idea would you like information about?");
 		std::string cmd;
 		std::getline(std::cin, cmd);
 
 		HistoryLogger<std::string, const Idea*>::Iterator idea = seenIdeas_.find(cmd);
 
 		if (idea != seenIdeas_.end()) {
-			Characteristics characs = idea->second->getCharacteristics();
-			std::cout << idea->second->getName() + " has the following characteristics:\n";
-			std::cout << characs << "Command: ";
+			streamWhip(idea->second->getName() + " has the following characteristics:");
+			streamCharacteristics(idea->second->getCharacteristics());
 			return;
 		}
 		else if (cmd == "List ideas" || cmd == "list") {
 			if (seenIdeas_.size() == 0) {
-				std::cout << "You haven't heard any ideas yet." << std::endl;
+				streamOutput("You haven't heard any ideas yet.");
 			}
 			for (HistoryLogger<std::string, const Idea*>::Iterator it = seenIdeas_.begin(); it != seenIdeas_.end(); ++it) {
-				std::cout << (it->second)->getName() + "\n";
+				streamOutput((it->second)->getName());
 			}
 		}
-		else if (cmd == "q" || cmd == "quit") {
+		else if (requestQuit(cmd)) {
 			return;
 		}
 		else if (requestHelp(cmd)) {
-			std::string output = "Whip: The options are:\n\tGive an idea name\n\tList ideas\n\tquit";
-			std::cout << output << std::endl;
+			streamWhip("The options are:\n\tGive an idea name\n\tList ideas\n\tquit");
 		}
 		else {
-			std::cout << "Idea or command not recognised." << std::endl;
+			streamOutput("Idea or command not recognised.");
 		}
 	}
 }
@@ -202,40 +204,69 @@ void userCommands::getIdeaDetails() {
 void userCommands::getMPDetails() {
 
 	while (true) {
-		std::cout << "Whip: Which MP would you like information about?\nCommand: ";
+		streamWhip("Which MP would you like information about?");
 		std::string cmd;
 		std::getline(std::cin, cmd);
 
 		Politician* mp = _whip->findMP(cmd);
 
 		if (mp != nullptr) {
-			Characteristics characs = mp->getCharacteristics();
-			std::cout << mp->getFirstName() + " " + mp->getLastName() + " has the following characteristics:\n";
-			std::cout << characs << std::endl;
+			streamWhip(mp->getFirstName() + " " + mp->getLastName() + " has the following characteristics:");
+			streamCharacteristics(mp->getCharacteristics());
 			return;
 		}
-		else if (cmd == "q" || cmd == "quit") {
+		else if (requestQuit(cmd)) {
 			return;
 		}
 		else if (requestHelp(cmd)) {
-			std::string output = "Whip: The options are:\n\tGive an MP's name\n\tquit";
-			std::cout << output << std::endl;
+			streamWhip("The options are:\n\tGive an MP's name\n\tquit");
 		}
 		else {
-			std::cout << "MP or command not recognised." << std::endl;
+			streamOutput("MP or command not recognised.");
 		}
 	}
 }
 
-void userCommands::getHelp() {
+std::string userCommands::getHelp() {
 
-	std::cout << "Command options are: " << std::endl;
-	std::cout << '\t' << "Find mp" << std::endl;
-	std::cout << '\t' << "Get advice" << std::endl;
-	std::cout << '\t' << "Legislation info" << std::endl;
-	std::cout << '\t' << "Trending ideas" << std::endl;
-	std::cout << '\t' << "Get stats" << std::endl;
-	std::cout << '\t' << "Quit" << std::endl;
+	std::string output = "Command options are: ";
+	output += "\n\tFind mp";
+	output += "\n\tGet advice";
+	output += "\n\tLegislation info";
+	output += "\n\tTrending ideas";
+	output += "\n\tGet stats";
+	output += "\n\tQuit";
+
+	return output;
+}
+
+std::string userCommands::streamWhip(std::string output) {
+
+	output = "Whip: " + output;
+	streamOutput(output);
+
+	return output;
+}
+
+std::string userCommands::streamOutput(std::string output) {
+
+	std::cout << "\r" + output << std::endl;
+	streamCommand();
+
+	return output;
+}
+
+std::string userCommands::streamCommand() {
+	std::string output = "\rCommand: ";
+	std::cout << output;
+
+	return output;
+}
+
+void userCommands::streamCharacteristics(Characteristics characs) {
+
+	std::cout << "\r" << characs << std::endl;
+	streamCommand();
 }
 
 userCommands::~userCommands()
