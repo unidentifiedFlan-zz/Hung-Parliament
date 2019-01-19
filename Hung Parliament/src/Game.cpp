@@ -13,7 +13,7 @@ game::game()
 	bool quit = false;
 
 	MPIsingModel mpNetwork(1);
-	Parliament parliament(20, &mpNetwork);
+	Parliament parliament(100, &mpNetwork);
 
 	PoliticianLists lists = parliament.createPoliticianLists();
 	Whip whip(&parliament, lists);

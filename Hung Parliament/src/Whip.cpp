@@ -20,7 +20,7 @@ int Whip::calculateTotalLegislationSupport() {
 
 void Whip::handleEvent(Event &e) {
 
-	std::string output = e.politician->getFirstName() + " " + e.politician->getLastName();
+	std::string output = e.politician->getName();
 
 	if (e.type == Event::addedIdea) {
 		output += " has adopted the idea " + e.idea->getName();
@@ -102,7 +102,7 @@ Politician* Whip::findMP(std::string &mp) {
 }
 
 std::string Whip::getMPDetails(const Politician* mp) {
-	std::string details = mp->getFirstName() + " " + mp->getLastName() + " has the following characteristics:\n";
+	std::string details = mp->getName() + " has the following characteristics:\n";
 
 	Characteristics characs = mp->getCharacteristics();
 	details += getCharacteristicDetails(characs);
