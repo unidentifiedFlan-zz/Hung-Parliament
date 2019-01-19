@@ -22,13 +22,6 @@ public:
 
 	Characteristics(std::vector<Characteristic> characs);
 
-	friend std::ostream& operator << (std::ostream& stream, const Characteristics &characs) {
-		for (std::unordered_map<std::string, int>::const_iterator it = characs._characs.begin(); it != characs._characs.end(); ++it) {
-			stream << it->first + ":\t" + std::to_string(it->second) + "\n";
-		}
-		return stream;
-	}
-
 	const int getValue(std::string charac) const;
 	const std::vector<Characteristic> getList() const;
 	const std::vector<Characteristic> characteristicDiff(const Characteristics& secondCharacteristicSet) const;

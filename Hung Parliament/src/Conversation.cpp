@@ -5,18 +5,21 @@
 Conversation::Conversation(Politician *mp, HistoryLogger<std::string, const Idea*> *seenIdeas, const Idea legislation) : 
 	            mp_(mp), seenIdeas_(seenIdeas), legislation_(legislation)
 {
-	streamOutput(introduction());
+	Output::general(introduction());
 
-	//Using windows.h
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 1);
-	streamMP(mp->sayHello());
+	Output::switchToConversation();
+	Output::politician(mp->sayHello(), mp->getName());
 
 	processCommands();
 }
 
+const bool Conversation::politicianAvailable(Politician *mp) {
+
+	return mp->isAvailable();
+}
 
 std::string Conversation::introduction() {
-	std::string intro = "You approach " + mp_->getFirstName() + " " + mp_->getLastName() + " -- " + mp_->getDescription();
+	std::string intro = "You approach " + mp_->getName() + " -- " + mp_->getDescription();
 
 	return intro;
 }
@@ -28,24 +31,24 @@ void Conversation::processCommands() {
 		std::string cmd;
 		std::getline(std::cin, cmd);
 
-		if (cmd == "Ask for support" || cmd == "support" || cmd == "Support") {
-			streamMP(mp_->getOpinion(&legislation_));
+		if (userCommands::getSupport(cmd)) {
+			Output::politician(mp_->getOpinion(&legislation_), mp_->getName());
 		}
-		else if (cmd == "Suggest idea" || cmd == "suggest" || cmd == "Suggest") {
+		else if (userCommands::suggestIdea(cmd)) {
 			suggestIdea();
 		}
-		else if (cmd == "Current ideas" || cmd == "ideas" || cmd == "Ideas") {
+		else if (userCommands::getIdeas(cmd)) {
 			getCurrentIdeas();
 		}
-		else if (cmd == "Leave" || cmd == "quit" || cmd == "q") {
+		else if (userCommands::quit(cmd)) {
 			endConversation();
 			return;
 		}
-		else if (cmd == "Help" || cmd == "help") {
+		else if (userCommands::help(cmd)) {
 			getHelp();
 		}
 		else {
-			std::cout << "Command not recognised." << std::endl;
+			Output::general("Command not recognised.");
 		}
 	}
 }
@@ -64,23 +67,23 @@ void Conversation::suggestIdea() {
 	output += '\t' + std::to_string(seenIdeas_->size()) + ") Never mind";
 
 	while (true) {
-		streamOutput(output);
+		Output::general(output);
 		std::string ans;
 		std::getline(std::cin, ans);
 		std::stringstream stream(ans);
 		int num;
 		if (stream >> num) {
 			if (num == seenIdeas_->size()) {
-				streamCommand();
+				Output::politician("Anything else?", mp_->getName());
 				return;
 			}
 			else if (num >= 0 && num < seenIdeas_->size()) {
 				const Idea* suggIdea = ideaList[num];
-				streamMP(mp_->getOpinion(suggIdea));
+				Output::politician(mp_->getOpinion(suggIdea), mp_->getName());
 				return;
 			}
 		}
-		streamOutput("Command not recognised.");
+		Output::general("Command not recognised.");
 	}
 }
 
@@ -94,44 +97,21 @@ void Conversation::getCurrentIdeas() {
 		seenIdeas_->add((*it)->getName(),*it);
 	}
 
-	streamOutput(currIdeasOutput);
+	Output::general(currIdeasOutput);
 }
 
 void Conversation::endConversation() {
 	std::string output = mp_->getFirstName() + " " + mp_->getLastName() + ": " + mp_->sayGoodbye();
-	streamOutput(output);
-	//Using windows.h
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-	streamCommand();
+	Output::general(output);
+	Output::switchToMainInterface();
 }
 
 void Conversation::getHelp() {
 	std::string help = "Command options are:\n\tAsk for support\n\tSuggest idea\n\tCurrent ideas\n\tLeave";
-	streamOutput(help);
-}
-
-std::string Conversation::streamMP(std::string output) {
-
-	output = mp_->getFirstName() + " " + mp_->getLastName() + ": " + output;
-	streamOutput(output);
-
-	return output;
-}
-
-std::string Conversation::streamOutput(std::string output) {
-
-	std::cout << "\r" + output << std::endl;
-	streamCommand();
-	return output;
-}
-
-std::string Conversation::streamCommand() {
-	std::string output = "\rCommand: ";
-	std::cout << output;
-
-	return output;
+	Output::general(help);
 }
 
 Conversation::~Conversation()
 {
+	mp_->setAvailable();
 }

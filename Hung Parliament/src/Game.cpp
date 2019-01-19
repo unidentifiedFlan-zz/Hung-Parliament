@@ -3,7 +3,7 @@
 #include <thread>
 
 #include "game.h"
-#include "UserCommands.h"
+#include "PlayerInterface.h"
 #include "MPIsingModel.h"
 #include "Parliament.h"
 #include "Whip.h"
@@ -20,8 +20,8 @@ game::game()
 
 	parliament.addListener(&whip);
 
-	userCommands userComm(&whip);
-	std::thread UIThread(&userCommands::waitForCommand, userComm, &quit);
+	PlayerInterface playerInterface(&whip);
+	std::thread UIThread(&PlayerInterface::waitForCommand, playerInterface, &quit);
 	std::thread networkThread(&MPIsingModel::runDynamics, mpNetwork, &quit);
 	
 	while (!quit) {}

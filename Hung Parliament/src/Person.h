@@ -11,6 +11,7 @@ public:
 	Person(std::string firstName, std::string lastName, std::string decription);
 	const std::string getFirstName() const;
 	const std::string getLastName() const;
+	const std::string getName() const;
 	const std::string getDescription() const;
 	const std::string sayHello() const;
 	const std::string sayGoodbye() const;

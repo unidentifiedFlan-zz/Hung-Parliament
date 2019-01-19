@@ -1,5 +1,7 @@
 #pragma once
 #include "politician.h"
+#include "UserCommands.h"
+#include "Output.h"
 
 class Conversation
 {
@@ -13,12 +15,10 @@ class Conversation
 	void getCurrentIdeas();
 	void endConversation();
 	void getHelp();
-	std::string streamMP(std::string output);
-	std::string streamOutput(std::string output);
-	std::string streamCommand();
 
 public:
 	Conversation(Politician *mp, HistoryLogger<std::string, const Idea*> *seenIdeas, const Idea legislation);
+	const static bool politicianAvailable(Politician *mp);
 	~Conversation();
 };
 

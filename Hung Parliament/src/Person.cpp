@@ -15,6 +15,10 @@ const std::string Person::getLastName() const {
 	return lastName_;
 }
 
+const std::string Person::getName() const {
+	return getFirstName() + " " + getLastName();
+}
+
 const std::string Person::getDescription() const {
 	return description_;
 }

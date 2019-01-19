@@ -20,46 +20,41 @@ int Whip::calculateTotalLegislationSupport() {
 
 void Whip::handleEvent(Event &e) {
 
-	//Using windows.h
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO buffInfo;
-
-	GetConsoleScreenBufferInfo(handle, &buffInfo);
-	WORD origAttr = buffInfo.wAttributes;
-	SetConsoleTextAttribute(handle, 4);
-
-	std::cout << "\rWhip: " + e.politician->getFirstName() + " " + e.politician->getLastName();
+	std::string output = e.politician->getFirstName() + " " + e.politician->getLastName();
 
 	if (e.type == Event::addedIdea) {
-		std::cout << " has adopted the idea " + e.idea->getName() << std::endl;
+		output += " has adopted the idea " + e.idea->getName();
 	}
 	else {
-		std::cout << " has dropped the idea " + e.idea->getName() << std::endl;
+		output += " has dropped the idea " + e.idea->getName();
 	}
 
-	updateLegislationSupport(e.politician);
+	Output::whipEvent(output);
 
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), origAttr);
-	std::cout << "\rCommand: ";
+	output += updateLegislationSupport(e.politician);
 }
 
-void Whip::updateLegislationSupport(Politician* mp) {
+std::string Whip::updateLegislationSupport(Politician* mp) {
 
 	bool  currentSupport = parliament_->calculateMPSupport(mp);
 	if (currentSupport == support_[mp]) {
-		return;
+		return "";
 	}
 	support_[mp] = currentSupport;
 
-	std::cout << "\rWhip: " + mp->getFirstName() + " " + mp->getLastName();
+	std::string output = mp->getName();
 	if (currentSupport) {
-		std::cout << " now supports the legislation." << std::endl;
+		output += " now supports the legislation.";
 		numMPsSupportingLegislation_++;
 	}
 	else {
-		std::cout << " no longer supports the legislation." << std::endl;
+		output += " no longer supports the legislation.";
 		numMPsSupportingLegislation_--;
 	}
+
+	Output::whipEvent(output);
+
+	return output;
 }
 
 std::string Whip::getAdvice() {
@@ -105,6 +100,38 @@ Idea Whip::getLegislation() {
 Politician* Whip::findMP(std::string &mp) {
 	return parliament_->findMP(mp);
 }
+
+std::string Whip::getMPDetails(const Politician* mp) {
+	std::string details = mp->getFirstName() + " " + mp->getLastName() + " has the following characteristics:\n";
+
+	Characteristics characs = mp->getCharacteristics();
+	details += getCharacteristicDetails(characs);
+
+	return details;
+}
+
+std::string Whip::getIdeaDetails(const Idea* idea) {
+	std::string details = idea->getName() + " has the following characteristics:\n";
+	
+	Characteristics characs = idea->getCharacteristics();
+	details += getCharacteristicDetails(characs);
+
+	return details;
+}
+
+std::string Whip::getCharacteristicDetails(Characteristics &characs) {
+
+	std::string details;
+
+	std::vector<Characteristics::Characteristic> characList = characs.getList();
+
+	for (std::vector<Characteristics::Characteristic>::iterator it = characList.begin(); it != characList.end(); ++it) {
+		details += it->name + ":\t" + std::to_string(it->value) + "\n";
+	}
+
+	return details;
+}
+
 
 Whip::~Whip()
 {
