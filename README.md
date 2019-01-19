@@ -28,6 +28,14 @@ arsenal by speaking to politicians. These can they be suggested to others, as se
 
 ![Gameplay screenshot: the idea is suggested to Polly Sanders](https://github.com/unidentifiedFlan/Hung-Parliament/blob/master/Documentation/Screenshots/Screenshot2.png)
 
+## ------Design------
+
+The high-level design of the source can be summarised by the following image:
+![High-level design of Hung Parliament](https://github.com/unidentifiedFlan/Hung-Parliament/blob/master/Documentation/SoftwareDesign.png)
+
+Note the diffusion model has been isolated so it may be easily swapped for another if an improved model is found or to allow a changing of dynamics mid-game representing a form of regime shift.
+
+
 ## ------Still in progress-----
 
 The list includes:
