@@ -35,7 +35,7 @@ void Conversation::processCommands() {
 			Output::politician(mp_->getOpinion(&legislation_), mp_->getName());
 		}
 		else if (userCommands::suggestIdea(cmd)) {
-			suggestIdea();
+			chooseIdeaToSuggest();
 		}
 		else if (userCommands::getIdeas(cmd)) {
 			getCurrentIdeas();
@@ -53,18 +53,36 @@ void Conversation::processCommands() {
 	}
 }
 
-void Conversation::suggestIdea() {
+std::vector<const Idea*> Conversation::createIdeaList() {
 
 	std::vector<const Idea*> ideaList;
 
-	//Create output string for reuse in each loop below
-	std::string output = "Which idea would you like to bring their attention to?\n";
+	for (HistoryLogger<std::string, const Idea*>::Iterator it = seenIdeas_->begin(); it != seenIdeas_->end(); ++it) {
+		ideaList.push_back(it->second);
+	}
+
+	return ideaList;
+}
+
+std::string Conversation::createIdeaListString() {
+
+	std::string output;
 	int i = 0;
 	for (HistoryLogger<std::string, const Idea*>::Iterator it = seenIdeas_->begin(); it != seenIdeas_->end(); ++it, ++i) {
 		output += "\t" + std::to_string(i) + ") " + (it->second)->getName() + "\n";
-		ideaList.push_back(it->second);
 	}
 	output += '\t' + std::to_string(seenIdeas_->size()) + ") Never mind";
+
+	return output;
+}
+
+
+void Conversation::chooseIdeaToSuggest() {
+
+	//Create output string for reuse in each loop below
+	std::string output = "Which idea would you like to bring their attention to?\n";
+	std::vector<const Idea*> ideaList = createIdeaList();
+	output += createIdeaListString();
 
 	while (true) {
 		Output::general(output);
@@ -78,8 +96,7 @@ void Conversation::suggestIdea() {
 				return;
 			}
 			else if (num >= 0 && num < seenIdeas_->size()) {
-				const Idea* suggIdea = ideaList[num];
-				Output::politician(mp_->getOpinion(suggIdea), mp_->getName());
+				suggestIdea(ideaList[num]);
 				return;
 			}
 		}
@@ -87,6 +104,18 @@ void Conversation::suggestIdea() {
 	}
 }
 
+std::string Conversation::suggestIdea(const Idea *idea) {
+
+	if (mp_->persuadedByIdea(idea)) {
+		Output::politician("I can support that!", mp_->getName());
+		mp_->replaceWeakestIdea(idea);
+	}
+	std::string output = mp_->getOpinion(idea);
+
+	Output::politician(output, mp_->getName());
+
+	return output;
+}
 
 void Conversation::getCurrentIdeas() {
 	const std::vector<const Idea*> ideaList = mp_->getListOfIdeas();

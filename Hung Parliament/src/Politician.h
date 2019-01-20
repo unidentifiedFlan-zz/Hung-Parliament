@@ -23,6 +23,9 @@ class Politician : public Publisher, public Person {
 	double ideaIdeaDistance(const Idea* theIdea);
 public:
 
+	// Persuasion threshold is the max characteristic difference from which
+	// an MP will adopt an idea
+	static const int PERSUASION_THRESHOLD = 3;
 	static const int MAXIDEAS = 3;
 
 	Politician(std::string firstName, std::string lastName, Characteristics traits);
@@ -48,13 +51,15 @@ public:
 
 	const Characteristics getCharacteristics() const;
 
-	void addIdea(const Idea* newIdea);
-	void removeIdea(const Idea* oldIdea);
+	bool addIdea(const Idea* newIdea);
+	bool removeIdea(const Idea* oldIdea);
 	const std::vector<const Idea*>& getListOfIdeas() const;
 	double calculateIdeaDistance(const Idea* idea);
 	const Idea* replaceWeakestIdea(const Idea* idea);
 	const Idea* getWeakestIdea() const;
 	const bool hasIdea(const Idea *Idea) const;
+
+	const bool persuadedByIdea(const Idea *idea);
 
 	const std::string getOpinion(const Idea* theIdea);
 	const std::string generateOpinion(const Idea* theIdea);

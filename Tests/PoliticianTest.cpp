@@ -120,3 +120,24 @@ TEST_F(politicianTest, weakestIdeaTest) {
 
 	ASSERT_EQ("Weak idea", mp.getWeakestIdea()->getDescription());
 }
+
+TEST_F(politicianTest, persuadedByIdeaTest) {
+
+	ASSERT_TRUE(mp->persuadedByIdea(newIdea));
+	mp->removeIdea(newIdea);
+
+	//Create threshold idea
+	Characteristics::Characteristic characThresh("liberal", 5 - Politician::PERSUASION_THRESHOLD);
+	Characteristics characsThresh({ characThresh });
+	const Idea thresholdIdea("ThreshIdea", "threshIdea", characsThresh);
+
+	ASSERT_TRUE(mp->persuadedByIdea(&thresholdIdea));
+
+	//Create distant idea
+	Characteristics::Characteristic characDist("liberal", 5 - Politician::PERSUASION_THRESHOLD - 1);
+	Characteristics characsDist({ characDist });
+	const Idea distantIdea("distantIdea", "distantIdea", characsDist);
+
+	ASSERT_FALSE(mp->persuadedByIdea(&distantIdea));
+}
+

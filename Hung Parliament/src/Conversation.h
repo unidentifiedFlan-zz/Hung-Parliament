@@ -11,7 +11,10 @@ class Conversation
 
 	std::string introduction();
 	void processCommands();
-	void suggestIdea();
+	std::vector<const Idea*> createIdeaList();
+	std::string createIdeaListString();
+	void chooseIdeaToSuggest();
+	std::string suggestIdea(const Idea *idea);
 	void getCurrentIdeas();
 	void endConversation();
 	void getHelp();

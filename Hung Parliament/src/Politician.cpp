@@ -35,27 +35,33 @@ const Characteristics Politician::getCharacteristics() const {
 	return characteristics_;
 }
 
-void Politician::addIdea(const Idea* newIdea) {
+bool Politician::addIdea(const Idea* newIdea) {
 
-	if (ideas_.size() == MAXIDEAS) {
-		return;
+	if (newIdea == nullptr || ideas_.size() == MAXIDEAS) {
+		return false;
 	}
 
+	//Check if politician already has this idea
 	for (std::vector<const Idea*>::const_iterator it = ideas_.begin(); it != ideas_.end(); ++it) {
 		if (*it == newIdea) {
-			return;
+			return false;
 		}
 	}
 	ideas_.emplace_back(newIdea);
 
+	//History must be cleared as new idea alters MP's characteristic distance from ideas
+	opinionHistory_.clear();
+
 	Event update(Event::addedIdea, this, newIdea);
 	notifyListeners(update);
+
+	return true;
 }
 
-void Politician::removeIdea(const Idea* oldIdea) {
+bool Politician::removeIdea(const Idea* oldIdea) {
 
 	if (oldIdea == nullptr) {
-		return;
+		return false;
 	}
 
 	for (std::vector<const Idea*>::const_iterator it = ideas_.begin(); it != ideas_.end(); ++it) {
@@ -69,9 +75,11 @@ void Politician::removeIdea(const Idea* oldIdea) {
 			Event update(Event::lostIdea, this, oldIdea);
 			notifyListeners(update);
 
-			return;
+			return true;
 		}
 	}
+
+	return false;
 }
 
 const bool Politician::hasIdea(const Idea* idea) const {
@@ -84,48 +92,6 @@ const bool Politician::hasIdea(const Idea* idea) const {
 	return false;
 }
 
-const std::string Politician::getOpinion(const Idea* theIdea) {
-	
-	if (opinionHistory_.exists(theIdea)) {
-		return opinionHistory_.find(theIdea)->second;
-	}
-
-	return generateOpinion(theIdea);
-}
-
-const std::string Politician::generateOpinion(const Idea* idea) {
-
-	//Find appropriate opinion according to characteristic difference. If the politician possesses the idea then they should fully endorse it,
-	//and the characteristics used below are the idea's own characteristics to find a fully endorsing opinion. Else the politician's own
-	//characteristics are used
-
-	// First check if the politician already has the idea.
-	// If it does, use the idea's characteristics
-	Characteristics characs = characteristics_;
-	for (std::vector<const Idea*>::iterator it = ideas_.begin(); it != ideas_.end(); ++it) {
-		if (idea == *it) {
-			characs = idea->getCharacteristics();
-		}
-	}
-
-	//Get the available options
-	std::vector<Opinion> opinions = idea->getOpinions();
-
-	std::vector<Opinion>::iterator newOpinion;
-	double opDist = 9999;
-	
-	//Choose the opinion whose characteristic difference with the politician is minimal
-	for (std::vector<Opinion>::iterator it = opinions.begin(); it != opinions.end(); ++it) {
-		double characDist = characs.characteristicDistance(it->getCharacteristics());
-		if (characDist < opDist) {
-			newOpinion = it;
-			opDist = characDist;
-		}
-	}
-
-	opinionHistory_.add(idea, newOpinion->getOpinion());
-	return newOpinion->getOpinion();
-}
 
 const std::vector<const Idea*>& Politician::getListOfIdeas() const {
 
@@ -151,12 +117,12 @@ double Politician::ideaIdeaDistance(const Idea* theIdea) {
 }
 
 double Politician::calculateIdeaDistance(const Idea* idea) {
-	double relativeImportance = 2;
+	double relativeImportance = 0.5;
 
 	double MPIdeaDistance = idea->getCharacteristics().characteristicDistance(getCharacteristics());
 	double ideasIdeaDistance = ideaIdeaDistance(idea);
 
-	return relativeImportance*abs(MPIdeaDistance) + abs(ideasIdeaDistance);
+	return abs(MPIdeaDistance) + relativeImportance * abs(ideasIdeaDistance);
 }
 
 const Idea* Politician::replaceWeakestIdea(const Idea* idea) {
@@ -190,6 +156,85 @@ const Idea* Politician::getWeakestIdea() const {
 	return *weakestIdea;
 }
 
+const bool Politician::persuadedByIdea(const Idea* idea) {
+
+	if (idea == nullptr) {
+		return false;
+	}
+
+	// Check if MP already has this idea
+	for (unsigned int i = 0; i < ideas_.size(); ++i) {
+		if (ideas_[i] == idea) {
+			return true;
+		}
+	}
+
+	double ideaDist = calculateIdeaDistance(idea);
+
+	// If MP has less than max number of ideas, they may adopt the idea provided
+	// it is within the persuasion threshold
+	if (ideas_.size() < MAXIDEAS && ideaDist <= PERSUASION_THRESHOLD) {
+		return true;
+	}
+
+
+	// If MP has max number of ideas, they will adopt the new idea if it is
+	// less distant than the currently held weakest idea. This condition
+	// may be less strict than the above as the weakest idea may not have been
+	// added adhering to the threshold rule.
+	const Idea* weakestIdea = getWeakestIdea();
+
+	if (weakestIdea != nullptr && ideaDist <= calculateIdeaDistance(getWeakestIdea())) {
+		return true;
+	}
+
+	return false;
+}
+
+
+const std::string Politician::getOpinion(const Idea* theIdea) {
+
+	if (opinionHistory_.exists(theIdea)) {
+		return opinionHistory_.find(theIdea)->second;
+	}
+	return generateOpinion(theIdea);
+}
+
+const std::string Politician::generateOpinion(const Idea* idea) {
+
+	//Find appropriate opinion according to characteristic difference. If the politician possesses the idea then they should fully endorse it,
+	//and the characteristics used below are the idea's own characteristics to find a fully endorsing opinion. Else the politician's own
+	//characteristics are used
+
+	// First check if the politician already has the idea.
+	// If it does, use the idea's characteristics. This ensures
+	// the opinion fully endorses the idea (else we could have
+	// a contradiction).
+	Characteristics characs = characteristics_;
+	for (std::vector<const Idea*>::iterator it = ideas_.begin(); it != ideas_.end(); ++it) {
+		if (idea == *it) {
+			characs = idea->getCharacteristics();
+		}
+	}
+
+	//Get the available options
+	std::vector<Opinion> opinions = idea->getOpinions();
+
+	std::vector<Opinion>::iterator newOpinion;
+	double opDist = 9999;
+
+	//Choose the opinion whose characteristic difference with the politician is minimal
+	for (std::vector<Opinion>::iterator it = opinions.begin(); it != opinions.end(); ++it) {
+		double characDist = characs.characteristicDistance(it->getCharacteristics());
+		if (characDist < opDist) {
+			newOpinion = it;
+			opDist = characDist;
+		}
+	}
+
+	opinionHistory_.add(idea, newOpinion->getOpinion());
+	return newOpinion->getOpinion();
+}
 
 Politician::~Politician()
 {
