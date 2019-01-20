@@ -1,24 +1,27 @@
 #include "gtest/gtest.h"
-#include "idea.h"
+#include "../Hung Parliament/src/Idea.h"
 
 class ideaTest : public ::testing::Test {
 protected:
 	virtual void SetUp() {
-		characs.emplace("influence", 5);
+		Characteristics::Characteristic charac("influence", 5);
+		std::vector< Characteristics::Characteristic> characsList({ charac });
+		characs = new Characteristics(characsList);
 	}
 	virtual void TearDown() {
-
+		delete characs;
 	}
+
 	std::string descrip = "A new Idea";
-	std::map<std::string, int> characs;
+	Characteristics *characs;
 };
 
 TEST_F(ideaTest, getDescriptionTest) {	
-	Idea newIdea(descrip, characs);
+	Idea newIdea(descrip, descrip, *characs);
 	ASSERT_EQ(descrip, newIdea.getDescription());
 }
 
 TEST_F(ideaTest, getCharacteristicsTest) {
-	Idea newIdea(descrip, characs);
+	Idea newIdea(descrip,  descrip, *characs);
 	ASSERT_EQ(5, newIdea.getCharacteristics().getValue("influence"));
 }
