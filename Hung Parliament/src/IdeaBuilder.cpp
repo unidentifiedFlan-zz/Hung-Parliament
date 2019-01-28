@@ -1,6 +1,7 @@
 #include "IdeaBuilder.h"
+#include <chrono>
 
-IdeaBuilder::IdeaBuilder(std::vector<std::string> &characNames) : characteristicNames(characNames){}
+IdeaBuilder::IdeaBuilder(std::vector<std::string> &characNames) : characteristicNames(characNames) {}
 
 tinyxml2::XMLError IdeaBuilder::loadFile() {
 	return doc.LoadFile("xml/Ideas.xml");
@@ -23,30 +24,28 @@ const bool IdeaBuilder::initParser() {
 	return false;
 }
 
-std::vector<Idea> IdeaBuilder::build(int numIdeas) {
+Ideas IdeaBuilder::build(const unsigned int &numIdeas) {
 
-	std::vector<Idea> ideaVector;
+	ideas.clear();
 
 	if (idea == nullptr && !initParser()) {
-		return ideaVector;
+		return ideas;
 	}
 
-	for (int n = 0; idea && n < numIdeas; ++n) {
+	for (unsigned int n = 0; idea && n < numIdeas; ++n) {
 
 		std::string ideaName = parseIdeaName();
 		std::string ideaDescription = parseText(idea);
 		Characteristics ideaCharacs = parseCharacteristics(idea);
 
-		std::vector<Opinion> opinionVector = parseOpinions();
+		Opinions opinionVector = parseOpinions();
 
-		//Create idea
 		Idea newIdea(ideaName, ideaDescription, ideaCharacs, opinionVector);
-		ideaVector.push_back(newIdea);
+
+		ideas.add(newIdea);
 		
 		idea = idea->NextSiblingElement("idea");
 	}
-
-	ideas.insert(ideas.end(), ideaVector.begin(), ideaVector.end());
 
 	return ideas;
 }
@@ -95,9 +94,9 @@ Characteristics IdeaBuilder::parseCharacteristics(tinyxml2::XMLElement *root) {
 	return newCharacs;
 }
 
-std::vector<Opinion> IdeaBuilder::parseOpinions() {
+Opinions IdeaBuilder::parseOpinions() {
 
-	std::vector<Opinion> opinionVector;
+	Opinions opinions;
 	tinyxml2::XMLElement *opinion = idea->FirstChildElement("opinion");
 	if (opinion != nullptr) {
 		while (opinion) {
@@ -106,15 +105,14 @@ std::vector<Opinion> IdeaBuilder::parseOpinions() {
 			std::string opText = parseText(opinion);
 
 			Opinion newOpinion(opText, opCharacs);
-			opinionVector.push_back(newOpinion);
+			opinions.add(newOpinion);
 
 			opinion = opinion->NextSiblingElement("opinion");
 		}
 	}
 
-	return opinionVector;
+	return opinions;
 }
-
 
 IdeaBuilder::~IdeaBuilder()
 {

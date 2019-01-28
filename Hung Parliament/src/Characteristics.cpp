@@ -10,6 +10,12 @@ Characteristics::Characteristics(std::vector<Characteristic> traits) {
 	}
 }
 
+Characteristics::Characteristics() {}
+
+void Characteristics::addCharacteristic(const Characteristic &charac) {
+	_characs.emplace(charac.name, charac.value);
+}
+
 const int Characteristics::getValue(std::string charac) const{
 
 	try{

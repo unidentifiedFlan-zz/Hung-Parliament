@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Characteristics.h"
-#include "Idea.h"
+#include "Ideas.h"
 #include "Publisher.h"
 #include "Person.h"
 #include "HistoryLogger.h"
@@ -13,28 +13,25 @@ class Politician : public Publisher, public Person {
 
 	Characteristics characteristics_;
 
-	//The number of ideas will typically be less than 10 so a vector will suffice
-	std::vector<const Idea*> ideas_;
+	Ideas ideas_;
 
 	//Stores the opinions previously generated so they do not need to be recalculated.
 	//Should be cleared whenever the polticians ideas or characteristics change
-	HistoryLogger<const Idea*, const std::string> opinionHistory_;
+	HistoryLogger<Idea, Opinion> opinionHistory_;
 
-	double ideaIdeaDistance(const Idea* theIdea);
+	const Idea& getWeakestIdea();
+
 public:
-
-	// Persuasion threshold is the max characteristic difference from which
-	// an MP will adopt an idea
-	static const int PERSUASION_THRESHOLD = 3;
-	static const int MAXIDEAS = 3;
+	static const unsigned int PERSUASION_THRESHOLD = 3;
+	static const unsigned int MAXIDEAS = 3;
 
 	Politician(std::string firstName, std::string lastName, Characteristics traits);
 	Politician(Person person, Characteristics traits, Listener *Legislature);
 	//Custom copy constructor required as mutex cannot be copied
 	Politician(const Politician &politician);
 
-	bool operator = (const Politician& politician) {
-		//Custum copy operator required as mutex cannot be copied
+	//Custom copy operator required as mutex cannot be copied
+	Politician& operator = (const Politician &politician) {
 		firstName_ = politician.firstName_;
 		lastName_ = politician.lastName_;
 		description_ = politician.description_;
@@ -44,6 +41,8 @@ public:
 		ideas_ = politician.ideas_;
 		opinionHistory_ = politician.opinionHistory_;
 		listeners_ = politician.listeners_;
+
+		return *this;
 	}
 
 	const bool isAvailable();
@@ -51,18 +50,15 @@ public:
 
 	const Characteristics getCharacteristics() const;
 
-	bool addIdea(const Idea* newIdea);
-	bool removeIdea(const Idea* oldIdea);
-	const std::vector<const Idea*>& getListOfIdeas() const;
-	double calculateIdeaDistance(const Idea* idea);
-	const Idea* replaceWeakestIdea(const Idea* idea);
-	const Idea* getWeakestIdea() const;
-	const bool hasIdea(const Idea *Idea) const;
+	bool addIdea(const Idea &newIdea);
+	bool removeIdea(const Idea &oldIdea);
+	const Ideas& getIdeas() const;
+	const bool hasIdea(const Idea &Idea) const;
+	const bool replaceWeakestIdea(const Idea &idea);
+	const bool persuadedByIdea(const Idea &idea);
 
-	const bool persuadedByIdea(const Idea *idea);
-
-	const std::string getOpinion(const Idea* theIdea);
-	const std::string generateOpinion(const Idea* theIdea);
+	const Opinion getOpinion(const Idea &idea);
+	const Opinion generateOpinion(const Idea &idea);
 	
 	~Politician();
 };

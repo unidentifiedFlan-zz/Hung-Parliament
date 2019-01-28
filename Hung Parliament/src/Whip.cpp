@@ -12,6 +12,7 @@ int Whip::calculateTotalLegislationSupport() {
 	for (int i = 0; i < parliament_->getNumberOfMPs(); ++i) {
 
 		Politician *mp = parliament_->getNextMP();
+
 		numMPsSupportingLegislation_ += parliament_->calculateMPSupport(mp);
 	}
 
@@ -23,10 +24,10 @@ void Whip::handleEvent(Event &e) {
 	std::string output = e.politician->getName();
 
 	if (e.type == Event::addedIdea) {
-		output += " has adopted the idea " + e.idea->getName();
+		output += " has adopted the idea " + e.idea.getName();
 	}
 	else {
-		output += " has dropped the idea " + e.idea->getName();
+		output += " has dropped the idea " + e.idea.getName();
 	}
 
 	Output::whipEvent(output);
@@ -110,10 +111,10 @@ std::string Whip::getMPDetails(const Politician* mp) {
 	return details;
 }
 
-std::string Whip::getIdeaDetails(const Idea* idea) {
-	std::string details = idea->getName() + " has the following characteristics:\n";
+std::string Whip::getIdeaDetails(const Idea &idea) {
+	std::string details = idea.getName() + " has the following characteristics:\n";
 	
-	Characteristics characs = idea->getCharacteristics();
+	Characteristics characs = idea.getCharacteristics();
 	details += getCharacteristicDetails(characs);
 
 	return details;

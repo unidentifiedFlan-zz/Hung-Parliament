@@ -31,6 +31,7 @@ public:
 
 TEST_F(NetworkBuilderTest, numAdjNodesTest) {
 
+	int MAX_CONNECTIONS_CONST = 3;
 	int min = 1000;
 	int max = 0;
 	for(std::unordered_map<std::string, Politician>::iterator it = MPs.begin(); it != MPs.end(); ++it) {
@@ -43,8 +44,8 @@ TEST_F(NetworkBuilderTest, numAdjNodesTest) {
 			max = numAdjMPs;
 		}
 	}
-	ASSERT_TRUE(min > 2) << min;
+	ASSERT_TRUE(min >= 2) << min;
 	ASSERT_TRUE(min < 6) << min;
-	ASSERT_TRUE(max <= 0.1*MPs.size()) << max;
+	ASSERT_TRUE(max <= MAX_CONNECTIONS_CONST*sqrt(MPs.size())) << max;
 	ASSERT_TRUE(max >= 0.05*MPs.size()) << max;
 }

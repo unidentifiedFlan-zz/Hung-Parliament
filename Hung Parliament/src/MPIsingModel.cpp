@@ -15,101 +15,87 @@ ideas should dominate.
 #include "stdafx.h"
 #include "MPIsingModel.h"
 
+MPIsingModel::MPIsingModel() { lastMPObserved = nullptr; }
 
-MPIsingModel::MPIsingModel(int interval) : AbstractNetworkDynamics(), _runInterval(interval)
+MPIsingModel::MPIsingModel(double alpha, double beta, double ideaInfluence) : alpha_(alpha), beta_(beta), IDEA_INFLUENCE(ideaInfluence)
 {
+	lastMPObserved = nullptr;
 }
 
-void MPIsingModel::runDynamics(bool *quit) {
-
-	while (!(*quit)) {
-
-		//Select a politician for adopting neighbouring ideas at the end of every run interval
-		time_t now = time(0);
-		if (difftime(now, _lastRunTime) > _runInterval) {
-			Politician* randMP = getRandomNode();
-
-			//Check Mp exists in the network and is not currently having its data altered elsewhere
-			while(!(randMP && nodeValid(randMP) && randMP->isAvailable())) {
-				randMP = getRandomNode();
-			}
-
-			getIdeasFromAdjacentMPs(randMP, getAdjacentNodes(randMP));
-			randMP->setAvailable();
-
-			_lastRunTime = now;
-		}
-	}
-}
-
-void MPIsingModel::getIdeasFromAdjacentMPs(Politician* randMP, const std::vector<Network<Politician*, double>::Edge> adjMPs) {
-
-	_exploredIdeas.clear();
-
-	//For each adjacent mp, check their ideas
-	for (std::vector<Network<Politician*, double>::Edge>::const_iterator linkIter = adjMPs.begin();
-		linkIter != adjMPs.end();
-		++linkIter) {
-
-		compareAdjacentIdeas(randMP, *linkIter);
-	}
-}
-
-
-
-void MPIsingModel::compareAdjacentIdeas(Politician* currentMP, const Network<Politician*, double>::Edge adjMP) {
-
-	// For each idea held by an adjacent MP, calculate the probability of adoption and, if sufficiently great, add 
-	// it to the MP's list of ideas. If the list is full, check whether the MP's weakest idea -- that is the currently
-	// held idea they have least affinity for -- can be replaced (i.e the new idea has a higher affinity with this MP than
-	// the weakest idea) .
-	for (std::vector<const Idea*>::const_iterator ideaIter = adjMP.adjacentNode->get->getListOfIdeas().begin();
-		ideaIter != adjMP.adjacentNode->get->getListOfIdeas().end();
-		++ideaIter) {
-
-		if (currentMP->hasIdea(*ideaIter)) {
-			continue;
-		}
-
-		double randomDouble = getRandomDouble();
-
-		if (ideaDiffusionProbability(currentMP, *ideaIter) > randomDouble) {
-			currentMP->replaceWeakestIdea(*ideaIter);
-		}
-
-
-		if (_exploredIdeas.exists(*ideaIter)){
-			_exploredIdeas.update(*ideaIter, adjMP.weight + _exploredIdeas.find(*ideaIter)->second);
-		}
-		else {
-			_exploredIdeas.add(*ideaIter, adjMP.weight);
-		}
-	}
-
-}
-
-double MPIsingModel::ideaDiffusionProbability(Politician* currentMP, const Idea* idea) {
+double MPIsingModel::ideaDiffusionProbability(Politician* mp, const Idea &idea, double externalInfluence) {
 
 	double probability = 0;
-
-	// Parameters to be calibrated
-	double alpha = 1.1, beta = 0.1;
-
+	
 	// This is the joint affinity between the MP and their current ideas with the idea being considered 
 	// for adoption
-	double MPIdeaDistance = currentMP->calculateIdeaDistance(idea);
+	double MPIdeaDistance = calculateMPIdeaDistance(mp, idea);
+	
+	double totalExternalInfluence = getTotalExternalInfluence(mp, idea);
 
-	// _exploredIdeas is used to store the ideas already explored in this round of idea propagation. Each
-	// time the same idea is considered for adoption, it's probability increases.
-	double cumulativeInfluence = (_exploredIdeas.exists(idea) ? _exploredIdeas.find(idea)->second : 0);
+	double H = alpha_*(MPIdeaDistance) - totalExternalInfluence;
 
-	double H = alpha*(MPIdeaDistance) - cumulativeInfluence;
-
-	probability = exp(-beta*H);
+	probability = exp(-beta_*H);
 
 	return probability;
 }
 
+double MPIsingModel::getTotalExternalInfluence(Politician* mp, const Idea &idea) {
+
+	// ExploredIdeas is used to store the ideas already explored in this round of idea propagation. Each
+	// time the same idea is considered for adoption, it's probability increases.
+	// We will refresh exploredIdeas each time we switch to a new mp so only the effect is only short term.
+	// This ensures the effect is dependent on the pressure being exerted at a particular time rather than
+	// a slow drip toward inevitability
+	if (mp != lastMPObserved) {
+		exploredIdeas_.clear();
+	}
+	double externalInfluence = (exploredIdeas_.exists(idea) ? exploredIdeas_.find(idea)->second : 0);
+	updateTotalExternalInfluence(idea, externalInfluence);
+
+	return externalInfluence;
+
+}
+double MPIsingModel::updateTotalExternalInfluence(const Idea &idea, double influence) {
+
+	if (exploredIdeas_.exists(idea)) {
+		exploredIdeas_.update(idea, influence + exploredIdeas_.find(idea)->second);
+	}
+	else {
+		exploredIdeas_.add(idea, influence);
+	}
+
+	return exploredIdeas_.find(idea)->second;
+}
+// The sum of the characteristic differences between the idea
+// being considered and those held by the politician
+double MPIsingModel::ideaIdeaDistance(Politician* mp, const Idea &idea) {
+
+	double ideaIdeaDistance = 0;
+
+	Ideas::Iterator ideasIter = mp->getIdeas().getFirst();
+
+	ideasIter != mp->getIdeas().getLast();
+
+	for (Ideas::Iterator ideasIter = mp->getIdeas().getFirst();
+		ideasIter != mp->getIdeas().getLast();
+		++ideasIter) {
+
+		double distance = idea.getCharacteristics().characteristicDistance(ideasIter->getCharacteristics());
+
+		ideaIdeaDistance += distance;
+	}
+
+	return ideaIdeaDistance;
+}
+
+double MPIsingModel::calculateMPIdeaDistance(Politician *mp, const Idea &idea) {
+
+	double MPIdeaDistance = idea.getCharacteristics().characteristicDistance(mp->getCharacteristics());
+
+	double ideasIdeaDistance = ideaIdeaDistance(mp, idea);
+	
+	return abs(MPIdeaDistance) + IDEA_INFLUENCE*abs(ideasIdeaDistance);
+}
 
 MPIsingModel::~MPIsingModel()
 {

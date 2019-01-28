@@ -59,6 +59,6 @@ TEST_F(characteristicsGeneratorTest, normalDistTest) {
 	}
 
 	double stdDev = sqrt(sum / (numCharacs));
-	EXPECT_NEAR(2, stdDev, 0.5);
+	EXPECT_NEAR(2, stdDev, 1.0);
 
 }

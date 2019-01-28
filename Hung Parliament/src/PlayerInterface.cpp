@@ -124,7 +124,7 @@ void PlayerInterface::getIdeaDetails() {
 		std::string cmd;
 		std::getline(std::cin, cmd);
 
-		HistoryLogger<std::string, const Idea*>::Iterator ideaIt = seenIdeas_.find(cmd);
+		HistoryLogger<std::string, Idea>::Iterator ideaIt = seenIdeas_.find(cmd);
 
 		if (ideaIt != seenIdeas_.end()) {
 			Output::whip(whip_->getIdeaDetails(ideaIt->second));
@@ -134,8 +134,8 @@ void PlayerInterface::getIdeaDetails() {
 			if (seenIdeas_.size() == 0) {
 				Output::general("You haven't heard any ideas yet.");
 			}
-			for (HistoryLogger<std::string, const Idea*>::Iterator it = seenIdeas_.begin(); it != seenIdeas_.end(); ++it) {
-				Output::general((it->second)->getName());
+			for (HistoryLogger<std::string, Idea>::Iterator it = seenIdeas_.begin(); it != seenIdeas_.end(); ++it) {
+				Output::general(it->second.getName());
 			}
 		}
 		else if (userCommands::quit(cmd)) {

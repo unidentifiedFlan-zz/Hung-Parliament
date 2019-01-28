@@ -26,7 +26,7 @@ public:
 
 	Politician* findMP(std::string &mp);
 	std::string getMPDetails(const Politician *mp);
-	std::string getIdeaDetails(const Idea *idea);
+	std::string getIdeaDetails(const Idea &idea);
 	~Whip();
 };
 

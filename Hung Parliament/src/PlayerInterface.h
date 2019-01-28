@@ -7,7 +7,7 @@
 class PlayerInterface
 {
 	Whip *whip_;
-	HistoryLogger<std::string, const Idea*> seenIdeas_;
+	HistoryLogger<std::string, Idea> seenIdeas_;
 
 	std::string introduction();
 	void applyCommand(std::string &cmd, bool *quit);

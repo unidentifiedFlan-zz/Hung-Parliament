@@ -5,13 +5,13 @@ NetworkBuilder::NetworkBuilder()
 	srand(static_cast<unsigned int>(time(0)));
 }
 
-Network<Politician*, double>* NetworkBuilder::build(std::unordered_map<std::string, Politician> &MPs, Network<Politician*, double> *network) {
+Network<Politician*, double>* NetworkBuilder::build(std::unordered_map<std::string, Politician> &MPs,
+	                                                Network<Politician*, double> *network) {
 
 	network_ = network;
 
 	for (std::unordered_map<std::string, Politician>::iterator it = MPs.begin(); it != MPs.end(); ++it) {
 		Politician * mp = &(it->second);
-
 		network->addNode(mp);
 		buildLinks(mp, MPs);
 	}
@@ -46,14 +46,19 @@ const bool NetworkBuilder::linkExists(Politician *mp1, Politician *mp2) {
 }
 
 const double NetworkBuilder::addProbability(Politician *mp1, Politician *mp2) {
+	// Each additional link becomes more improbable. The probability of a new link
+	// is inversely proportional to the number of links it already has.
+
 	double characsDist = mp1->getCharacteristics().characteristicDistance(mp2->getCharacteristics());
 
-	if (characsDist < 1) {
+	if (characsDist < 0.1) {
 		return 1;
 	}
 
 	int numAdjNodes = network_->getAdjacentNodes(mp1).size();
-	if (numAdjNodes == 0) {
+
+	// Prevent a singularity
+	if (numAdjNodes < 1) {
 		numAdjNodes = 1;
 	}
 

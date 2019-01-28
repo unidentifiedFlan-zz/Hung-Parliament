@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "Conversation.h"
 #include <sstream>
+#include "MPIsingModel.h"
 
-Conversation::Conversation(Politician *mp, HistoryLogger<std::string, const Idea*> *seenIdeas, const Idea legislation) : 
+
+Conversation::Conversation(Politician *mp, HistoryLogger<std::string, Idea> *seenIdeas, const Idea &legislation) : 
 	            mp_(mp), seenIdeas_(seenIdeas), legislation_(legislation)
 {
 	Output::general(introduction());
@@ -32,7 +34,7 @@ void Conversation::processCommands() {
 		std::getline(std::cin, cmd);
 
 		if (userCommands::getSupport(cmd)) {
-			Output::politician(mp_->getOpinion(&legislation_), mp_->getName());
+			Output::politician(mp_->getOpinion(legislation_).get(), mp_->getName());
 		}
 		else if (userCommands::suggestIdea(cmd)) {
 			chooseIdeaToSuggest();
@@ -53,11 +55,11 @@ void Conversation::processCommands() {
 	}
 }
 
-std::vector<const Idea*> Conversation::createIdeaList() {
+std::vector<Idea> Conversation::createIdeaList() {
 
-	std::vector<const Idea*> ideaList;
+	std::vector<Idea> ideaList;
 
-	for (HistoryLogger<std::string, const Idea*>::Iterator it = seenIdeas_->begin(); it != seenIdeas_->end(); ++it) {
+	for (HistoryLogger<std::string, Idea>::Iterator it = seenIdeas_->begin(); it != seenIdeas_->end(); ++it) {
 		ideaList.push_back(it->second);
 	}
 
@@ -68,8 +70,8 @@ std::string Conversation::createIdeaListString() {
 
 	std::string output;
 	int i = 0;
-	for (HistoryLogger<std::string, const Idea*>::Iterator it = seenIdeas_->begin(); it != seenIdeas_->end(); ++it, ++i) {
-		output += "\t" + std::to_string(i) + ") " + (it->second)->getName() + "\n";
+	for (HistoryLogger<std::string, Idea>::Iterator it = seenIdeas_->begin(); it != seenIdeas_->end(); ++it, ++i) {
+		output += "\t" + std::to_string(i) + ") " + it->second.getName() + "\n";
 	}
 	output += '\t' + std::to_string(seenIdeas_->size()) + ") Never mind";
 
@@ -81,7 +83,7 @@ void Conversation::chooseIdeaToSuggest() {
 
 	//Create output string for reuse in each loop below
 	std::string output = "Which idea would you like to bring their attention to?\n";
-	std::vector<const Idea*> ideaList = createIdeaList();
+	std::vector<Idea> ideaList = createIdeaList();
 	output += createIdeaListString();
 
 	while (true) {
@@ -104,13 +106,13 @@ void Conversation::chooseIdeaToSuggest() {
 	}
 }
 
-std::string Conversation::suggestIdea(const Idea *idea) {
+std::string Conversation::suggestIdea(const Idea &idea) {
 
 	if (mp_->persuadedByIdea(idea)) {
 		Output::politician("I can support that!", mp_->getName());
 		mp_->replaceWeakestIdea(idea);
 	}
-	std::string output = mp_->getOpinion(idea);
+	std::string output = mp_->getOpinion(idea).get();
 
 	Output::politician(output, mp_->getName());
 
@@ -118,12 +120,12 @@ std::string Conversation::suggestIdea(const Idea *idea) {
 }
 
 void Conversation::getCurrentIdeas() {
-	const std::vector<const Idea*> ideaList = mp_->getListOfIdeas();
+	const Ideas ideaList = mp_->getIdeas();
 	std::string currIdeasOutput = "The ideas I currently like are:";
 
-	for (std::vector<const Idea*>::const_iterator it = ideaList.begin(); it != ideaList.end(); ++it) {
-		currIdeasOutput += "\n\t" + (*it)->getName();
-		seenIdeas_->add((*it)->getName(),*it);
+	for (Ideas::Iterator it = ideaList.getFirst(); it != ideaList.getLast(); ++it) {
+		currIdeasOutput += "\n\t" + it->getName();
+		seenIdeas_->add(it->getName(),*it);
 	}
 
 	Output::general(currIdeasOutput);

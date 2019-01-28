@@ -1,24 +1,25 @@
 #pragma once
 
-#include "AbstractNetworkDynamics.h"
 #include "politician.h"
 #include "HistoryLogger.h"
 
-class MPIsingModel : public AbstractNetworkDynamics<Politician*, double>
+class MPIsingModel
 {
+	double alpha_ = 4, beta_ = 0.1;
+	HistoryLogger<Idea, double> exploredIdeas_;
+	Politician* lastMPObserved;
 
-	time_t _runInterval;
-	time_t _lastRunTime;
-
-	HistoryLogger<const Idea*, double> _exploredIdeas;
-
-	void getIdeasFromAdjacentMPs(Politician* randMP, const std::vector<Network<Politician*, double>::Edge> adjNodes);
-	void compareAdjacentIdeas(Politician* currentMP, Network<Politician*, double>::Edge linkedMP);
+	double ideaIdeaDistance(Politician* mp, const Idea &theIdea);
 
 public:
-	MPIsingModel(int interval);
-	void runDynamics(bool *quit);
-	double ideaDiffusionProbability(Politician* currentMP, const Idea* theIdea);
+	const double IDEA_INFLUENCE = 0.5;
+
+	MPIsingModel();
+	MPIsingModel(double alpha, double beta, double ideaInfluence);
+	double ideaDiffusionProbability(Politician* mp, const Idea &theIdea, double externalInfluence);
+	double getTotalExternalInfluence(Politician* mp, const Idea &idea);
+	double updateTotalExternalInfluence(const Idea &idea, double externalInfluence);
+	double calculateMPIdeaDistance(Politician* mp, const Idea &idea);
 
 	~MPIsingModel();
 };

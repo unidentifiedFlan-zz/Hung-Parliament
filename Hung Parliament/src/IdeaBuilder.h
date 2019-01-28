@@ -1,8 +1,9 @@
 #pragma once
 #include "stdafx.h"
-#include "Idea.h"
-#include "Opinion.h"
+#include "Ideas.h"
+#include "Opinions.h"
 #include "tinyxml2.h"
+#include <random>
 
 class IdeaBuilder
 {
@@ -11,17 +12,18 @@ protected:
 	tinyxml2::XMLElement *idea;
 	std::vector<std::string> characteristicNames;
 
-	std::vector<Idea> ideas;
+	Ideas ideas;
 
 	const bool initParser();
 	virtual tinyxml2::XMLError loadFile();
 	std::string parseIdeaName();
 	std::string parseText(tinyxml2::XMLElement *root);
 	Characteristics parseCharacteristics(tinyxml2::XMLElement *root);
-	std::vector<Opinion> parseOpinions();
+	Opinions parseOpinions();
+	const unsigned int generateUniqueID();
 public:
 	IdeaBuilder(std::vector<std::string> &characteristicNames);
-	std::vector<Idea> build(int numIdeas);
+	Ideas build(const unsigned int &numIdeas);
 	virtual ~IdeaBuilder();
 };
 

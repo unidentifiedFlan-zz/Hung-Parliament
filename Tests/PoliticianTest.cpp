@@ -1,19 +1,21 @@
 #include "pch.h"
 #include "../Hung Parliament/src/Politician.h"
-#include "../Hung Parliament/src/Idea.h"
 
+////////////////////////////////////////////////////////////////////////////
+// Test case setup
+//
+////////////////////////////////////////////////////////////////////////////
 class politicianTest : public ::testing::Test {
 protected:
 	virtual void SetUp() {
-		Characteristics::Characteristic charac("liberal", 5);
+		Characteristics::Characteristic charac(characteristicLabel, characteristicValue);
 		Characteristics characs({ charac });
-
 		newIdea = new Idea("new idea", "new idea", characs);
 
 		firstName = "John";
 		lastName = "Smith";
 		mp = new Politician(firstName, lastName, characs);
-		mp->addIdea(newIdea);
+		mp->addIdea(*newIdea);
 	}
 	virtual void TearDown() {
 		delete newIdea;
@@ -22,23 +24,9 @@ protected:
 
 	const Idea *newIdea;
 	Politician *mp;
-	std::string firstName, lastName;
+	std::string firstName, lastName, characteristicLabel = "liberal";
+	int characteristicValue = 5;
 };
-
-
-TEST_F(politicianTest, removeIdeaTest) {
-	mp->removeIdea(newIdea); 
-
-	ASSERT_EQ("new idea", newIdea->getDescription());
-}
-
-TEST_F(politicianTest, getListOfIdeasTest) {
-
-	std::vector<const Idea*> ideas = mp->getListOfIdeas();
-	std::vector<const Idea*>::const_iterator it = ideas.begin();
-
-	ASSERT_EQ("new idea", (*it)->getDescription());
-}
 
 TEST_F(politicianTest, hasIdeaTest) {
 
@@ -46,8 +34,22 @@ TEST_F(politicianTest, hasIdeaTest) {
 	Characteristics characs({ charac });
 	Idea badIdea("bad idea", "bad idea", characs);
 
-	ASSERT_TRUE(mp->hasIdea(newIdea));
-	ASSERT_FALSE(mp->hasIdea(&badIdea));
+	ASSERT_TRUE(mp->hasIdea(*newIdea));
+	ASSERT_FALSE(mp->hasIdea(badIdea));
+}
+
+TEST_F(politicianTest, removeIdeaTest) {
+	mp->removeIdea(*newIdea); 
+
+	ASSERT_FALSE(mp->hasIdea(*newIdea));
+}
+
+TEST_F(politicianTest, getListOfIdeasTest) {
+
+	Ideas ideas = mp->getIdeas();
+	Ideas::Iterator it = ideas.getFirst();
+
+	ASSERT_EQ("new idea", it->getDescription());
 }
 
 TEST_F(politicianTest, nameTest) {
@@ -56,88 +58,69 @@ TEST_F(politicianTest, nameTest) {
 	ASSERT_EQ("Smith", mp->getLastName());
 }
 
-TEST_F(politicianTest, ideaDistanceTest) {
-
-	Characteristics::Characteristic socLiberal("socLiberal", 5);
-	Characteristics::Characteristic econLiberal("econLiberal", 5);
-	Characteristics::Characteristic enviroProgressive("enviroProgressive", 5);
-	Characteristics characsA({ socLiberal, econLiberal, enviroProgressive });
-
-	Idea ideaA("ideaA", "ideaA", characsA);
-
-	socLiberal.value = -1;
-	econLiberal.value = 1;
-	enviroProgressive.value = 0;
-	Characteristics characsB({ socLiberal, econLiberal, enviroProgressive });
-
-	Idea ideaB("ideaB", "ideaB", characsB);
-
-	socLiberal.value = 6;
-	econLiberal.value = 4;
-	enviroProgressive.value = 4;
-	Characteristics characsC({ socLiberal, econLiberal, enviroProgressive });
-
-	Idea ideaC("ideaC", "ideaC", characsC);
-
-	socLiberal.value = 1;
-	econLiberal.value = 1;
-	enviroProgressive.value = 1;
-	Characteristics characsD({ socLiberal, econLiberal, enviroProgressive });
-
-	Idea ideaD("ideaD", "ideaD", characsD);
-	Politician mp("John", "Smith", characsD);
-
-	ASSERT_EQ(0, mp.calculateIdeaDistance(&ideaD));
-
-	mp.addIdea(&ideaB);
-	mp.addIdea(&ideaC);
-
-	//sum of idea distances + factor*mpIdea distance
-	//distance((5- -1), (5-1), (5-0)) + distance((5-6),(5-4),(5-4)) + factor*distance((5-1).(5-1),(5-1))
-	// = sqrt(77) + sqrt(3) + factor*sqrt(48)
-
-	ASSERT_EQ(sqrt(77) + sqrt(3) + 2*sqrt(48), mp.calculateIdeaDistance(&ideaA));
-}
-
 TEST_F(politicianTest, weakestIdeaTest) {
 
-	Characteristics::Characteristic influence("influence", 5);
-	Characteristics::Characteristic socLiberal("socLiberal", -2);
-	Characteristics::Characteristic econLiberal("econLiberal", 3);
+	Characteristics::Characteristic influence("influence", 0);
+	Characteristics::Characteristic socLiberal("socLiberal", 0);
+	Characteristics::Characteristic econLiberal("econLiberal", 0);
 	Characteristics weakCharacs({ influence, socLiberal, econLiberal });
 
 	const Idea weakIdea("Weak idea", "Weak idea", weakCharacs);
 
-	influence.value = 9;
+	influence.value = -1;
+	socLiberal.value = -1;
+	econLiberal.value = -1;
+	Characteristics weakerCharacs({ influence, socLiberal, econLiberal });
+
+	const Idea weakerIdea("Weaker idea", "Weaker idea", weakerCharacs);
+
+	influence.value = -5;
+	socLiberal.value = -5;
+	econLiberal.value = -5;
+	Characteristics weakestCharacs({ influence, socLiberal, econLiberal });
+
+	const Idea weakestIdea("Weakest idea", "Weakest idea", weakestCharacs);
+
+	influence.value = 10;
 	socLiberal.value = 10;
-	econLiberal.value = -8;
+	econLiberal.value = 10;
 	Characteristics strongCharacs({ influence, socLiberal, econLiberal });
 	
 	const Idea StrongIdea("Strong idea", "Strong idea", strongCharacs);
 	Politician mp(firstName, lastName, strongCharacs);
-	mp.addIdea(&weakIdea);
-	mp.addIdea(&StrongIdea);
 
-	ASSERT_EQ("Weak idea", mp.getWeakestIdea()->getDescription());
+	ASSERT_FALSE(mp.getIdeas().includes(weakIdea));
+	mp.addIdea(weakIdea);
+	ASSERT_TRUE(mp.getIdeas().includes(weakIdea));
+	ASSERT_FALSE(mp.getIdeas().includes(weakerIdea));
+	mp.addIdea(weakerIdea);
+	ASSERT_TRUE(mp.getIdeas().includes(weakerIdea));
+	ASSERT_FALSE(mp.getIdeas().includes(weakestIdea));
+	mp.addIdea(weakestIdea);
+	ASSERT_TRUE(mp.getIdeas().includes(weakestIdea));
+
+	ASSERT_TRUE(mp.replaceWeakestIdea(StrongIdea));
+	ASSERT_FALSE(mp.getIdeas().includes(weakestIdea));
+
+	ASSERT_TRUE(mp.getIdeas().includes(StrongIdea));
 }
 
 TEST_F(politicianTest, persuadedByIdeaTest) {
 
-	ASSERT_TRUE(mp->persuadedByIdea(newIdea));
-	mp->removeIdea(newIdea);
+	ASSERT_TRUE(mp->persuadedByIdea(*newIdea)) << "NewIdea";
+	mp->removeIdea(*newIdea);
 
 	//Create threshold idea
 	Characteristics::Characteristic characThresh("liberal", 5 - Politician::PERSUASION_THRESHOLD);
 	Characteristics characsThresh({ characThresh });
 	const Idea thresholdIdea("ThreshIdea", "threshIdea", characsThresh);
 
-	ASSERT_TRUE(mp->persuadedByIdea(&thresholdIdea));
+	ASSERT_TRUE(mp->persuadedByIdea(thresholdIdea)) << "threshold idea";
 
 	//Create distant idea
-	Characteristics::Characteristic characDist("liberal", 5 - Politician::PERSUASION_THRESHOLD - 1);
+	Characteristics::Characteristic characDist("liberal", characteristicValue - Politician::PERSUASION_THRESHOLD - 1);
 	Characteristics characsDist({ characDist });
 	const Idea distantIdea("distantIdea", "distantIdea", characsDist);
 
-	ASSERT_FALSE(mp->persuadedByIdea(&distantIdea));
+	ASSERT_FALSE(mp->persuadedByIdea(distantIdea)) << "distantIdea";
 }
-
