@@ -7,6 +7,10 @@ PoliticianLists::PoliticianLists(Network<Politician*, double> *network)
 }
 
 double PoliticianLists::calculateInfluence(double influence, int numConn) {
+	if (numConn == 0) {
+		return 0;
+	}
+
 	return (influence / numConn);
 }
 
@@ -35,6 +39,7 @@ std::vector<PoliticianLists::Influence> PoliticianLists::initialiseMostInfluenti
 
 			totalInfluence += it2->weight;
 		}
+
 		Influence influence(it->first, calculateInfluence(totalInfluence, adjMPs.size()));
 		mostInfluential_.push_back(influence);
 	}

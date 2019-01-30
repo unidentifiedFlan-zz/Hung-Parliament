@@ -20,6 +20,14 @@ public:
 		return instance_;
 	}
 
+	double generateDouble() {
+
+		std::uniform_real_distribution<double> distribution(0, 1);
+		double randomDouble = distribution(generator_);
+
+		return randomDouble;
+	}
+
 	unsigned int generate() {
 
 		unsigned int randomInt = generator_();

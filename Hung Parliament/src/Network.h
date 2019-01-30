@@ -56,8 +56,10 @@ public:
 		if (it1 != network_.end()) {
 			iterator it2 = network_.find(node2);
 			if (it2 != network_.end()) {
+
 				Edge newEdge(&it2->second, linkValue);
 				it1->second.edges.push_back(newEdge);
+
 				NUM_LINKS++;
 				return true;
 			}
@@ -75,6 +77,7 @@ public:
 
 				if (itAdj->adjacentNode->get == node2) {
 					it1->second.edges.erase(itAdj);
+
 					NUM_LINKS--;
 					return true;
 				}
@@ -119,5 +122,5 @@ public:
 
 	protected:
 		std::unordered_map<T, Node> network_;
-		double NUM_LINKS = 0;
+		unsigned int NUM_LINKS = 0;
 };

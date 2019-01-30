@@ -50,15 +50,13 @@ TEST_F(PoliticianListsTest, GetMostConnectedTest) {
 	}
 }
 
-//Because link weights were decreased with increasing number of connections, the influence list should be the opposite of the
-//connections list, i.e influence decreases with i
 //The list should return the politicians with the greatest average influence
 TEST_F(PoliticianListsTest, GetMostInfluentialTest) {
 
 	std::vector<PoliticianLists::Influence> influenceList = lists->getMostInfluentialList();
 
-	int i = 0;
-	for (std::vector<PoliticianLists::Influence>::iterator it = influenceList.begin(); it != influenceList.end(); ++it, ++i) {
-		ASSERT_EQ(std::to_string(i), it->politician->getFirstName());
+	std::vector<PoliticianLists::Influence>::iterator it2 = influenceList.begin()++;
+	for (std::vector<PoliticianLists::Influence>::iterator it1 = influenceList.begin(); it2 != influenceList.end(); ++it1, ++it2) {
+		ASSERT_TRUE(it2->value >= it1->value);
 	}
 }

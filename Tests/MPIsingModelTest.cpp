@@ -1,39 +1,17 @@
 #include "pch.h"
 #include "../Hung Parliament/src/MPIsingModel.h"
 
-
 class MPIsingTest : public ::testing::Test {
 
 public:
 	virtual void SetUp() {
 		model = new MPIsingModel();
-		Characteristics::Characteristic socLiberal("socLiberal", -5);
-		Characteristics::Characteristic econLiberal("econLiberal", -5);
-		Characteristics::Characteristic enviroProgressive("enviroProgressive", -5);
-		Characteristics characsA({socLiberal, econLiberal, enviroProgressive});
 
-		ideaA = new Idea("ideaA", "ideaA", characsA);
+		ideaA = new Idea(createIdea("A", -5, -5, -5));
+		ideaB = new Idea(createIdea("B", 0, 0, 0));
+		ideaC = new Idea(createIdea("C", 5, 5, 5));
 
-		socLiberal.value = 0;
-		econLiberal.value = 0;
-		enviroProgressive.value = 0;
-		Characteristics characsB({ socLiberal, econLiberal, enviroProgressive });
-
-		ideaB = new Idea("ideaB", "ideaB", characsB);
-
-		socLiberal.value = 5;
-		econLiberal.value = 5;
-		enviroProgressive.value = 5;
-		Characteristics characsC({ socLiberal, econLiberal, enviroProgressive });
-
-		ideaC = new Idea("ideaC", "ideaC", characsC);
-
-		socLiberal.value = -5;
-		econLiberal.value = -5;
-		enviroProgressive.value = -5;
-		Characteristics characsD({ socLiberal, econLiberal, enviroProgressive });
-
-		mp = new Politician("John", "Smith", characsD);
+		mp = new Politician(createPolitician("John", "Smith", -5, -5, -5));
 	}
 
 	virtual void TearDown() {
@@ -69,12 +47,31 @@ public:
 	Idea *ideaA, *ideaB, *ideaC;
 };
 
+//////////////////////////////////////////////////////////////////////////////////
+//
+// The tests below use the default parameters of the MP Ising model
+//////////////////////////////////////////////////////////////////////////////////
+
 
 TEST_F(MPIsingTest, ideaDiffusionProbabilityTest) {
 
+	// If an idea's characteristics equal that of the politician, it
+	// should be guaranteed to be adopted provided there is space
 	ASSERT_EQ(1, model->ideaDiffusionProbability(mp,*ideaA, 0));
-	EXPECT_NEAR(0.2, model->ideaDiffusionProbability(mp, *ideaB, 0), 0.1);
+
+	// If an idea is as far as possible from the politician's characteristics,
+	// it should be incredibly unlikely to be adopted
 	EXPECT_NEAR(0, model->ideaDiffusionProbability(mp, *ideaC, 0), 0.05);
+
+	ASSERT_TRUE(model->ideaDiffusionProbability(mp, *ideaB, 0) >
+		        model->ideaDiffusionProbability(mp, *ideaC, 0));
+
+	ASSERT_TRUE(model->ideaDiffusionProbability(mp, *ideaB, 0) <
+		        model->ideaDiffusionProbability(mp, *ideaA, 0));
+
+	// The probability of adopting an idea half as distant as the maximum
+	// should be fairly small
+	ASSERT_TRUE(model->ideaDiffusionProbability(mp, *ideaB, 0) < 0.1);
 }
 
 TEST_F(MPIsingTest, ideaDistanceTest) {

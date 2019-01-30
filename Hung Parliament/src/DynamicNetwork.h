@@ -13,11 +13,6 @@ class DynamicNetwork : public Network<Politician*, double>
 	void getIdeasFromAdjacentMPs(Politician* randMP, const std::vector<Network<Politician*, double>::Edge> adjNodes);
 	void compareAdjacentIdeas(Politician* currentMP, Network<Politician*, double>::Edge linkedMP);
 
-	double getRandomDouble() {
-
-		return (double)rand() / RAND_MAX;
-	}
-
 public:
 	DynamicNetwork(int interval, const MPIsingModel &model);
 	void runDynamics(bool *quit);
