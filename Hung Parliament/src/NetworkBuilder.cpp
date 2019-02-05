@@ -5,13 +5,13 @@ NetworkBuilder::NetworkBuilder()
 	srand(static_cast<unsigned int>(time(0)));
 }
 
-Network<Politician*, double>* NetworkBuilder::build(std::unordered_map<std::string, Politician> &MPs,
+Network<Politician*, double>* NetworkBuilder::build(Politicians &MPs,
 	                                                Network<Politician*, double> *network) {
 
 	network_ = network;
 
-	for (std::unordered_map<std::string, Politician>::iterator it = MPs.begin(); it != MPs.end(); ++it) {
-		Politician * mp = &(it->second);
+	for (Politicians::Iterator it = MPs.getFirst(); it != MPs.getLast(); ++it) {
+		Politician * mp = *it;
 		network->addNode(mp);
 		buildLinks(mp, MPs);
 	}
@@ -19,12 +19,16 @@ Network<Politician*, double>* NetworkBuilder::build(std::unordered_map<std::stri
 	return network_;
 }
 
-Network<Politician*, double>* NetworkBuilder::buildLinks(Politician *mp, std::unordered_map<std::string, Politician> &MPs) {
+Network<Politician*, double>* NetworkBuilder::buildLinks(Politician *mp, Politicians &MPs) {
 
-	for (std::unordered_map<std::string, Politician>::iterator it2 = MPs.begin(); it2 != MPs.end(); ++it2) {
-		Politician * mp2 = &(it2->second);
+	for (Politicians::Iterator it2 = MPs.getFirst(); it2 != MPs.getLast(); ++it2) {
+		Politician * mp2 = *it2;
 
-		if (!(mp == mp2) && !linkExists(mp, mp2) && addProbability(mp, mp2) > randNum()) {
+		RandomGenerator *generator = RandomGenerator::getInstance();
+		double randNum = generator->generateDouble();
+
+		if (!(mp == mp2) && !linkExists(mp, mp2) && (addProbability(mp, mp2) > randNum)) {
+
 			network_->addLink(mp, mp2, 5);
 			network_->addLink(mp2, mp, 5);
 		}
@@ -63,10 +67,6 @@ const double NetworkBuilder::addProbability(Politician *mp1, Politician *mp2) {
 	}
 
 	return 1 / (characsDist*pow(numAdjNodes,2));
-}
-
-const double NetworkBuilder::randNum() {
-	return (double) rand() / RAND_MAX;
 }
 
 NetworkBuilder::~NetworkBuilder()

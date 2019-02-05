@@ -22,7 +22,7 @@ class PersonBuilder
 
 public:
 	PersonBuilder(int numPersons);
-	const Person genPerson();
+	const Person generatePerson();
 	
 	~PersonBuilder();
 };

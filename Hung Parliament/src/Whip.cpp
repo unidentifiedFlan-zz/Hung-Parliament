@@ -4,19 +4,7 @@
 
 Whip::Whip(Parliament *parliament, PoliticianLists &lists) : parliament_(parliament), lists_(lists) {
 
-	calculateTotalLegislationSupport();
-}
-
-int Whip::calculateTotalLegislationSupport() {
-
-	for (int i = 0; i < parliament_->getNumberOfMPs(); ++i) {
-
-		Politician *mp = parliament_->getNextMP();
-
-		numMPsSupportingLegislation_ += parliament_->calculateMPSupport(mp);
-	}
-
-	return numMPsSupportingLegislation_;
+	parliament->calculateTotalLegislationSupport();
 }
 
 void Whip::handleEvent(Event &e) {
@@ -32,7 +20,7 @@ void Whip::handleEvent(Event &e) {
 
 	Output::whipEvent(output);
 
-	output += updateLegislationSupport(e.politician);
+	updateLegislationSupport(e.politician);
 }
 
 std::string Whip::updateLegislationSupport(Politician* mp) {

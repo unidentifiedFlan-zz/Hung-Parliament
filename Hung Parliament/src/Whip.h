@@ -8,11 +8,10 @@ class Whip : public Listener
 	Parliament *parliament_;
 	PoliticianLists lists_;
 
-	std::map<Politician*, bool> support_;
 	int numMPsSupportingLegislation_ = 0;
-
-	int calculateTotalLegislationSupport();
+	std::map<Politician*, bool> support_;
 	std::string updateLegislationSupport(Politician *mp);
+
 	std::string getCharacteristicDetails(Characteristics &characs);
 public:
 	Whip(Parliament *parliament, PoliticianLists& lists);

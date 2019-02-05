@@ -1,10 +1,12 @@
 #include "pch.h"
 #include "../Hung Parliament/src/MPIsingModel.h"
+#include "../Hung Parliament/src/Politicians.h"
 
 class MPIsingTest : public ::testing::Test {
 
 public:
 	virtual void SetUp() {
+
 		model = new MPIsingModel();
 
 		ideaA = new Idea(createIdea("A", -5, -5, -5));

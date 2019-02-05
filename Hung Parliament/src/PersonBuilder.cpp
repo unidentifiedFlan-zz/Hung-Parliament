@@ -91,7 +91,7 @@ const std::string PersonBuilder::parseGoodbye() {
 	return goodbye;
 }
 
-const Person PersonBuilder::genPerson() {
+const Person PersonBuilder::generatePerson() {
 
 	if (persons_.size() == 0) {
 		return manualBuild();

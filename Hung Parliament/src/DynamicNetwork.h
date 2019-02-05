@@ -10,8 +10,8 @@ class DynamicNetwork : public Network<Politician*, double>
 	time_t lastRunTime_;
 	MPIsingModel model_;
 
-	void getIdeasFromAdjacentMPs(Politician* randMP, const std::vector<Network<Politician*, double>::Edge> adjNodes);
-	void compareAdjacentIdeas(Politician* currentMP, Network<Politician*, double>::Edge linkedMP);
+	void getIdeasFromAdjacentMPs(Politician* randMP, const std::vector<Edge> adjNodes);
+	void compareAdjacentIdeas(Politician* currentMP, Edge linkedMP);
 
 public:
 	DynamicNetwork(int interval, const MPIsingModel &model);

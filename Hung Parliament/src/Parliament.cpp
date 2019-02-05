@@ -4,15 +4,18 @@
 #include "NetworkBuilder.h"
 #include "IdeaBuilder.h"
 #include "LegislationBuilder.h"
-#include <random>
+#include "RandomGenerator.h"
 
 namespace {
 
 	std::vector<double> getRandomVector(const unsigned int &size) {
 		std::vector<double> randomList;
 
+		RandomGenerator *generator = RandomGenerator::getInstance();
+
 		for (unsigned int i = 0; i < size; ++i) {
-			randomList.push_back(((double)rand() / RAND_MAX));
+			double randDouble = generator->generateDouble();
+			randomList.push_back(randDouble);
 		}
 		return randomList;
 	}
@@ -25,9 +28,10 @@ Parliament::Parliament(const unsigned int &numMPs, DynamicNetwork *network) : ne
 	lastIdea_ = ideas_.getLast();
 
 	MPs_ = buildMPs(numMPs);
-	numMPs_ = MPs_.size();
+	nextMP_ = MPs_.getFirst();
+	lastMP_ = MPs_.getLast();
 
-	spawnNewIdeas(MPs_.size()/NUM_POLITICIANS_PER_IDEA);
+	spawnNewIdeas(MPs_.numberOf()/NUM_POLITICIANS_PER_IDEA);
 
 	//Build network
 	NetworkBuilder networkBuilder;
@@ -55,16 +59,11 @@ Ideas Parliament::buildIdeas(const unsigned int &numMPs) {
 	return newIdeas;
 }
 
-std::unordered_map<std::string, Politician> Parliament::buildMPs(const unsigned int &numMPs) {
-
-	std::unordered_map<std::string, Politician> newMPs;
+Politicians Parliament::buildMPs(const unsigned int &numMPs) {
 
 	PoliticianBuilder mpBuilder(this, characteristicNames_);
 
-	for (unsigned int i = 0; i < numMPs; ++i) {
-		Politician mp = mpBuilder.build();
-		newMPs.emplace(mp.getFirstName() + " " + mp.getLastName(), mp);
-	}
+	Politicians newMPs = mpBuilder.build(numMPs);
 
 	return newMPs;
 }
@@ -88,19 +87,19 @@ Ideas Parliament::spawnNewIdeas(const unsigned int &numIdeas) {
 	std::sort(randomNums.begin(), randomNums.end());
 
 	//Step size is interval of numbers allotted to each MP
-	double stepSize = 1.0 / numMPs_;
+	double stepSize = 1.0 / MPs_.numberOf();
 
 	//Index i represents the ith idea
 	unsigned int index = 0;
 	//cumulative number is the sum of all intervals up to tha point in the loop
 	double cumulNum = 0;
 
-	for (std::unordered_map<std::string, Politician>::iterator it = MPs_.begin();
-		 cumulNum <= 1 && it != MPs_.end() && index < ideas_.numberOf(); ++it) {
+	for (Politicians::Iterator it = MPs_.getFirst();
+		 cumulNum <= 1 && it != MPs_.getLast() && index < ideas_.numberOf(); ++it) {
 
 		if (cumulNum > randomNums[index]) {
 			const Idea idea = getNextIdea();
-			it->second.addIdea(idea);
+			it->addIdea(idea);
 			spawnedIdeas.add(idea);
 			++index;
 		}
@@ -116,17 +115,17 @@ void Parliament::handleEvent(Event &e) {
 	notifyListeners(e);
 }
 
-Politician* Parliament::findMP(std::string mp) {
+Politician* Parliament::findMP(std::string mpName) {
 
-	std::unordered_map<std::string, Politician>::iterator it = MPs_.find(mp);
-	if (it == MPs_.end()) {
+	Politicians::Iterator it = MPs_.find(mpName);
+	if (it == MPs_.getLast()) {
 		return nullptr;
 	}
 
-	return &(it->second);
+	return *it;
 }
 
-std::vector<Network<Politician*, double>::Edge> Parliament::getMPConnections(Politician* mp) const {
+std::vector<DynamicNetwork::Edge> Parliament::getMPConnections(Politician *mp) const {
 	return network_->getAdjacentNodes(mp);
 }
 
@@ -134,15 +133,15 @@ Politician* Parliament::getNextMP() {
 
 	if (nextMP_ == lastMP_) {
 
-		nextMP_ = MPs_.begin();
-		lastMP_ = MPs_.end();
+		nextMP_ = MPs_.getFirst();
+		lastMP_ = MPs_.getLast();
 	}
 
-	return &(nextMP_++)->second;
+	return *(nextMP_++);
 }
 
 int Parliament::getNumberOfMPs() {
-	return numMPs_;
+	return MPs_.numberOf();
 }
 
 PoliticianLists Parliament::createPoliticianLists() {
@@ -164,6 +163,18 @@ bool Parliament::calculateMPSupport(Politician *mp) const {
 	return distance < 6 ? true : false;
 }
 
-Parliament::~Parliament()
-{
+int Parliament::calculateTotalLegislationSupport() {
+
+	int numMPsSupportingLegislation = 0;
+
+	for (Politicians::Iterator it = MPs_.getFirst(); it != MPs_.getLast(); ++it) {
+
+		numMPsSupportingLegislation += calculateMPSupport(*it);
+
+	}
+
+	return numMPsSupportingLegislation;
 }
+
+Parliament::~Parliament()
+{}

@@ -16,7 +16,13 @@ const std::string Person::getLastName() const {
 }
 
 const std::string Person::getName() const {
-	return getFirstName() + " " + getLastName();
+	std::string name = firstName_;
+
+	if (lastName_.size() > 0) {
+		name += " " + lastName_;
+	}
+
+	return name;
 }
 
 const std::string Person::getDescription() const {

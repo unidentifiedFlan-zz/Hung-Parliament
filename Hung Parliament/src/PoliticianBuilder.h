@@ -15,9 +15,9 @@ class PoliticianBuilder
 
 public:
 	PoliticianBuilder(Parliament *parliament, std::vector<std::string> &characteristicNames);
-	Person genPerson();
+	Person generatePerson();
 	void setCharacteristics();
-	Politician build();
+	Politicians build(const unsigned int numPoliticians);
 	~PoliticianBuilder();
 };
 

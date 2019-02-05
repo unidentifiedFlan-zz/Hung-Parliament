@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include <stack>
 #include "Listener.h"
-#include "Politician.h"
+#include "Politicians.h"
 #include "DynamicNetwork.h"
 #include "PoliticianLists.h"
 
@@ -12,12 +12,12 @@ class Parliament : public Listener, public Publisher
 
 	std::vector<std::string> characteristicNames_ = { "egalitarian", "econLib", "authoritarian" };
 	
-	int numMPs_ = 0;
-	std::unordered_map<std::string, Politician> MPs_;
-	std::unordered_map<std::string, Politician>::iterator nextMP_ = MPs_.begin();
-	std::unordered_map<std::string, Politician>::iterator lastMP_ = MPs_.end();
+	Politicians MPs_;
+	Politicians::Iterator nextMP_ = MPs_.getFirst();
+	Politicians::Iterator lastMP_ = MPs_.getLast();
 
 	std::stack<Idea> legislation_;
+
 	Ideas ideas_;
 	Ideas::Iterator nextIdea_;
 	Ideas::Iterator lastIdea_;
@@ -26,7 +26,7 @@ class Parliament : public Listener, public Publisher
 
 	const Idea getNextIdea();
 	Ideas buildIdeas(const unsigned int &numMPs);
-	std::unordered_map<std::string, Politician> buildMPs(const unsigned int &numMPs);
+	Politicians buildMPs(const unsigned int &numMPs);
 
 public:
 	Parliament(const unsigned int &numMPs, DynamicNetwork *network);
@@ -35,14 +35,14 @@ public:
 	void handleEvent(Event &e);
 
 	Politician* findMP(std::string mp);
-	std::vector<Network<Politician*, double>::Edge> getMPConnections(Politician* mp) const;
+	std::vector<DynamicNetwork::Edge> getMPConnections(Politician *mp) const;
     Politician* getNextMP();
 	int getNumberOfMPs();
 	PoliticianLists createPoliticianLists();
 
 	Idea getLegislation();
-
 	bool calculateMPSupport(Politician *mp) const;
+	int calculateTotalLegislationSupport();
 
 	~Parliament();
 };

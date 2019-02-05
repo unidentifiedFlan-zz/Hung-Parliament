@@ -7,22 +7,27 @@ PoliticianBuilder::PoliticianBuilder(Parliament * parliament, std::vector<std::s
 	characsGen_ = new CharacteristicsGenerator(characNames);
 }
 
-Person PoliticianBuilder::genPerson() {
+Person PoliticianBuilder::generatePerson() {
 
-	return personBuilder_->genPerson();
+	return personBuilder_->generatePerson();
 }
 
 void PoliticianBuilder::setCharacteristics() {
 	characteristics_ = new Characteristics(characsGen_->generateCharacteristics());
 }
 
-Politician PoliticianBuilder::build() {
+Politicians PoliticianBuilder::build(const unsigned int numPoliticians) {
 
-	Person newPerson = genPerson();
-	setCharacteristics();
-	Politician mp (newPerson, *characteristics_, parliament_);
+	Politicians newPoliticians;
 
-	return mp;
+	for (unsigned int i = 0; i < numPoliticians; ++i) {
+		Person newPerson = generatePerson();
+		setCharacteristics();
+		Politician mp(newPerson, *characteristics_, parliament_);
+		newPoliticians.add(mp);
+	}
+
+	return newPoliticians;
 }
 
 PoliticianBuilder::~PoliticianBuilder()

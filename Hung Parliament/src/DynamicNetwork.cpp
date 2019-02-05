@@ -26,10 +26,10 @@ void DynamicNetwork::runDynamics(bool *quit) {
 	}
 }
 
-void DynamicNetwork::getIdeasFromAdjacentMPs(Politician* randMP, const std::vector<Network<Politician*, double>::Edge> adjMPs) {
+void DynamicNetwork::getIdeasFromAdjacentMPs(Politician* randMP, const std::vector<Edge> adjMPs) {
 
 	//For each adjacent mp, check their ideas
-	for (std::vector<Network<Politician*, double>::Edge>::const_iterator linkIter = adjMPs.begin();
+	for (std::vector<Edge>::const_iterator linkIter = adjMPs.begin();
 		linkIter != adjMPs.end();
 		++linkIter) {
 		compareAdjacentIdeas(randMP, *linkIter);
@@ -38,7 +38,7 @@ void DynamicNetwork::getIdeasFromAdjacentMPs(Politician* randMP, const std::vect
 
 
 
-void DynamicNetwork::compareAdjacentIdeas(Politician* currentMP, const Network<Politician*, double>::Edge adjMP) {
+void DynamicNetwork::compareAdjacentIdeas(Politician* currentMP, const Edge adjMP) {
 
 	// For each idea held by an adjacent MP, calculate the probability of adoption and, if sufficiently great, add 
 	// it to the MP's list of ideas. If the list is full, check whether the MP's weakest idea -- that is the currently
@@ -53,7 +53,7 @@ void DynamicNetwork::compareAdjacentIdeas(Politician* currentMP, const Network<P
 		}
 
 		RandomGenerator *gen = RandomGenerator::getInstance();
-		double randomDouble = gen->generate();
+		double randomDouble = gen->generateDouble();
 
 		if (model_.ideaDiffusionProbability(currentMP, *ideaIter, adjMP.weight) > randomDouble) {
 			currentMP->replaceWeakestIdea(*ideaIter);
@@ -79,8 +79,8 @@ Politician* DynamicNetwork::getRandomNode() {
 	double randomDouble = gen->generateDouble();
 
 	double sum = 0;
-	for (typename Network<Politician*, double>::iterator it = Network<Politician*, double>::network_.begin();
-		  it != Network<Politician*, double>::network_.end(); ++it) {
+	for (typename iterator it = network_.begin();
+		  it != network_.end(); ++it) {
 
 		double numAdjMPs = it->second.edges.size();
 		if (NUM_LINKS == 0) {
@@ -92,5 +92,5 @@ Politician* DynamicNetwork::getRandomNode() {
 		}
 	}
 
-	return Network<Politician*, double>::network_.begin()->first;
+	return network_.begin()->first;
 }

@@ -13,7 +13,7 @@ public:
 		for (int i = 0; i < 100; ++i) {
 			Characteristics c = characGen.generateCharacteristics();
 			Politician p(std::to_string(i), "", c);
-			MPs.emplace(std::to_string(i), p);
+			MPs.add(p);
 		}
 
 		NetworkBuilder networkBuilder;
@@ -26,7 +26,7 @@ public:
 	}
 
 	Network<Politician*, double> network;
-	std::unordered_map<std::string, Politician> MPs;
+	Politicians MPs;
 };
 
 TEST_F(NetworkBuilderTest, numAdjNodesTest) {
@@ -34,8 +34,8 @@ TEST_F(NetworkBuilderTest, numAdjNodesTest) {
 	int MAX_CONNECTIONS_CONST = 3;
 	int min = 1000;
 	int max = 0;
-	for(std::unordered_map<std::string, Politician>::iterator it = MPs.begin(); it != MPs.end(); ++it) {
-		Politician *mp = &(it->second);
+	for(Politicians::Iterator it = MPs.getFirst(); it != MPs.getLast(); ++it) {
+		Politician *mp = *it;
 		int numAdjMPs = network.getAdjacentNodes(mp).size();
 		if (numAdjMPs < min) {
 			min = numAdjMPs;
@@ -46,6 +46,6 @@ TEST_F(NetworkBuilderTest, numAdjNodesTest) {
 	}
 	ASSERT_TRUE(min >= 2) << min;
 	ASSERT_TRUE(min < 6) << min;
-	ASSERT_TRUE(max <= MAX_CONNECTIONS_CONST*sqrt(MPs.size())) << max;
-	ASSERT_TRUE(max >= 0.05*MPs.size()) << max;
+	ASSERT_TRUE(max <= MAX_CONNECTIONS_CONST*sqrt(MPs.numberOf())) << max;
+	ASSERT_TRUE(max >= 0.05*MPs.numberOf()) << max;
 }
